@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Helvetica-neue", sans-serif;
+  src: url(/fonts/HelveticaNeueBold.otf);
+  /* font-weight: bold; */
+}
