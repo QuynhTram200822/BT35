@@ -7,3 +7,31 @@
   src: url(/fonts/HelveticaNeueBold.otf);
   /* font-weight: bold; */
 }
+
+@import "./node_modules/pikaday/css/pikaday.css";
+
+input[type="checkbox"],
+input[type="radio"] {
+  color: #4fd1c5;
+}
+
+input[type="search"] {
+  border-radius: 15px;
+  border: 0.5px solid #e2e8f0;
+}
+
+input[type="search"]:focus {
+  border-color: #4fd1c5;
+}
+input[type="search"]::before,
+::after {
+  border-color: #4fd1c5;
+}
+
+.hidden {
+  display: none;
+}
+
+.show {
+  display: block;
+}
