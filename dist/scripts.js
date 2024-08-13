@@ -60,15 +60,16 @@ function addTask() {
   const taskDate = document.getElementById("datepicker").value;
   const taskPriority = document.querySelector("#selectedPriority").innerText;
 
-  let newStudent = {
+  let newTask = {
     id: idCounter++,
     name: taskName,
     description: taskDescription,
     date: taskDate,
     priority: taskPriority,
+    isCompleted: false,
   };
 
-  tasks.push(newStudent);
+  tasks.push(newTask);
   console.log(tasks);
   // Add the task
   renderTaskList(taskName, taskDescription, taskDate, taskPriority);
@@ -164,16 +165,16 @@ function cancelTask() {
 }
 
 // Function Edit Task
+
 // Function Delete Task
 function deleteTask(taskId) {
-  // Xóa task khỏi mảng tasks
   tasks = tasks.filter((task) => task.id !== taskId);
 
-  // Cập nhật lại danh sách task
+  // Re-render the task list to reflect the deletion
   renderTaskList();
 }
 
-function showConfirmModal() {
+function showConfirmModal(taskId) {
   const confirmModal = document.getElementById("confirmModal");
   confirmModal.classList.toggle("hidden");
 
@@ -186,7 +187,7 @@ function showConfirmModal() {
   // Handle Delete button click
   let deleteButton = document.getElementById("deleteButton");
   deleteButton.onclick = function () {
-    deleteTask(tasks);
+    deleteTask(taskId);
     confirmModal.style.display = "none";
   };
 }

@@ -35,3 +35,7 @@ input[type="search"]::before,
 .show {
   display: block;
 }
+.checked {
+  /* color: #555; */
+  text-decoration: line-through;
+}
