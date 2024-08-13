@@ -72,29 +72,34 @@ function addTask() {
   tasks.push(newTask);
   console.log(tasks);
   // Add the task
-  renderTaskList(taskName, taskDescription, taskDate, taskPriority);
+  renderTaskList();
 
   // Reset the form
   cancelTask();
 }
 
-function renderTaskList(taskName, taskDescription, taskDate, taskPriority) {
+function renderTaskList() {
   const taskList = document.getElementById("task-list");
   taskList.innerHTML = "";
+
   tasks.forEach((task) => {
+    const completedClass = task.isCompleted ? "checked" : ""; // Thêm lớp nếu đã hoàn thành
+    const radioboxChecked = task.isCompleted ? "checked" : ""; // Đánh dấu ô kiểm nếu đã hoàn thành
+
     const taskHTML = `
-    <div class="mx-2 mt-3">
-    <div class="flex items-start justify-between p-4">
-        <div>
-            <div class="flex items-start gap-2">
-                <input id="teal-checkbox" type="checkbox" class="w-4 h-4 mt-2 bg-gray-100 border-gray-300 rounded focus:ring-0">
-                <input id="default-radio-1" type="radio" name="default-radio" class="w-4 h-4 mt-2 bg-gray-100 border-gray-300 custom-checkbox focus:ring-0">
+    <div class="mx-2 mt-3  ">
+    <div class="flex items-start justify-between p-4  ">
+        <div class=" " >
+            <div class="flex items-start gap-2 ${completedClass} ">
+                <input id="checkbox-${task.id}" type="checkbox" class="w-4 h-4 mt-2 bg-gray-100 border-gray-300 rounded focus:ring-0">
+                <input  ${radioboxChecked} id="mark-single-${task.id}" type="checkbox" class="w-4 h-4 mt-2 bg-gray-100 border-gray-300 rounded-full focus:ring-0">
+              
                 <div>
                     <div class="">
-                        <input type="text" value="${taskName}" class="border-none block w-full py-1.5 text-sm placeholder:text-gray-400" placeholder="Task name" readonly>
+                        <input type="text" value="${task.name}" class="border-none block w-full py-1.5 text-sm placeholder:text-gray-400" placeholder="Task name" readonly>
                     </div>
                     <div class="mt-1">
-                        <input type="text" value="${taskDescription}" class="border-none block w-full py-1.5 text-sm placeholder:text-gray-300" placeholder="Description" readonly>
+                        <input type="text" value="${task.description}" class="border-none block w-full py-1.5 text-sm placeholder:text-gray-300" placeholder="Description" readonly>
                     </div>
                 </div>
             </div>
@@ -103,7 +108,7 @@ function renderTaskList(taskName, taskDescription, taskDate, taskPriority) {
                     <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
                         <i class="text-gray-400 me-2 bi bi-calendar-event"></i>
                     </div>
-                    <input type="text" value="${taskDate}" class="px-2 py-1 text-base text-green-500 bg-transparent border border-gray-400 rounded ps-10 max-w-40 placeholder:text-green-500" placeholder="Today" readonly>
+                    <input type="text" value="${task.date}" class="px-2 py-1 text-base text-green-500 bg-transparent border border-gray-400 rounded ps-10 max-w-40 placeholder:text-green-500" placeholder="Today" readonly>
                     <div class="absolute inset-y-0 flex items-center pointer-events-none end-0 ps-3">
                     <i class="text-gray-400 me-2 bi bi-x-lg"></i>
                   </div>
@@ -112,7 +117,7 @@ function renderTaskList(taskName, taskDescription, taskDate, taskPriority) {
                 class="items-center w-32 px-2 py-1 text-sm text-center text-gray-400 bg-transparent border border-gray-400 rounded font-base"
                 type="button">
                 <i class="text-gray-400 me-2 bi bi-flag"></i>
-                <span>${taskPriority}</span>
+                <span>${task.priority}</span>
               </button>
             </div>
   
@@ -144,6 +149,8 @@ function renderTaskList(taskName, taskDescription, taskDate, taskPriority) {
   `;
     taskList.innerHTML += taskHTML;
   });
+
+  addCheckboxEventListeners();
 
   cancelTask();
 }
@@ -190,4 +197,14 @@ function showConfirmModal(taskId) {
     deleteTask(taskId);
     confirmModal.style.display = "none";
   };
+}
+
+function addCheckboxEventListeners() {
+  tasks.forEach((task) => {
+    const markSingle = document.getElementById(`mark-single-${task.id}`);
+    markSingle.addEventListener("change", function () {
+      task.isCompleted = this.checked;
+      renderTaskList();
+    });
+  });
 }
