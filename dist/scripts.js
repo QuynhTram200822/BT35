@@ -13,51 +13,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
   dropdown.addEventListener("click", function (event) {
     if (event.target && event.target.matches(".dropdown-item")) {
-      // const priorityText = event.target.textContent.trim();
       const priorityValue = event.target.getAttribute("data-priority");
       selectedPriority.textContent = priorityValue;
     }
   });
 });
 
-//Function Select Due Date
-// document.addEventListener("DOMContentLoaded", function () {
-//   // Initialize datepicker
-//   const datepickerElement = document.getElementById("datepicker");
-//   const datepicker = new Datepicker(datepickerElement, {
-//     format: "mm/dd/yyyy",
-//     autohide: true,
-//   });
-
-//   // Add event listener to capture date change
-//   datepickerElement.addEventListener("changeDate", function () {
-//     // Get the selected date from the datepicker input value
-//     const selectedDate = datepickerElement.value;
-//     if (selectedDate) {
-//       // Format the date
-//       const formattedDate = formatDate(new Date(selectedDate));
-//       console.log("Formatted Date:", formattedDate);
-//       // Update the input field with the formatted date
-//       datepickerElement.value = formattedDate;
-//     }
-//   });
-
-//   // Function to format the date
-//   function formatDate(date) {
-//     if (!date) return ""; // Handle case where no date is selected
-//     const options = { year: "numeric", month: "short", day: "2-digit" };
-//     return new Intl.DateTimeFormat("en-US", options).format(date);
-//   }
-// });
+// Function change date follow the format in UI
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const options = { day: "2-digit", month: "long", year: "numeric" };
+  return date.toLocaleDateString("en-GB", options);
+}
 
 //Function Add Task
 let tasks = [];
 let idCounter = 1;
 function addTask() {
-  // event.preventDefault();
   const taskName = document.getElementById("mainTask").value;
   const taskDescription = document.getElementById("mainDescription").value;
-  const taskDate = document.getElementById("datepicker").value;
+  const taskDate = formatDate(document.getElementById("datepicker").value);
   const taskPriority = document.querySelector("#selectedPriority").innerText;
 
   let newTask = {
@@ -83,8 +58,8 @@ function renderTaskList() {
   taskList.innerHTML = "";
 
   tasks.forEach((task) => {
-    const completedClass = task.isCompleted ? "checked" : ""; // Thêm lớp nếu đã hoàn thành
-    const radioboxChecked = task.isCompleted ? "checked" : ""; // Đánh dấu ô kiểm nếu đã hoàn thành
+    const completedClass = task.isCompleted ? "checked" : ""; // add class "checked" if completed
+    const radioboxChecked = task.isCompleted ? "checked" : "";
 
     const taskHTML = `
     <div class="mx-2 mt-3  ">
@@ -104,11 +79,11 @@ function renderTaskList() {
                 </div>
             </div>
             <div class="flex gap-3 mt-3">
-                <div class="relative max-w-40">
+                <div class="relative ">
                     <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
                         <i class="text-gray-400 me-2 bi bi-calendar-event"></i>
                     </div>
-                    <input type="text" value="${task.date}" class="px-2 py-1 text-base text-green-500 bg-transparent border border-gray-400 rounded ps-10 max-w-40 placeholder:text-green-500" placeholder="Today" readonly>
+                    <input type="text" value="${task.date}" class="px-2 py-1 text-base text-green-500 bg-transparent border border-gray-400 rounded ps-10 placeholder:text-green-500" placeholder="Today" readonly>
                     <div class="absolute inset-y-0 flex items-center pointer-events-none end-0 ps-3">
                     <i class="text-gray-400 me-2 bi bi-x-lg"></i>
                   </div>
@@ -177,7 +152,6 @@ function cancelTask() {
 function deleteTask(taskId) {
   tasks = tasks.filter((task) => task.id !== taskId);
 
-  // Re-render the task list to reflect the deletion
   renderTaskList();
 }
 
@@ -199,6 +173,7 @@ function showConfirmModal(taskId) {
   };
 }
 
+// Function mark completed
 function addCheckboxEventListeners() {
   tasks.forEach((task) => {
     const markSingle = document.getElementById(`mark-single-${task.id}`);
