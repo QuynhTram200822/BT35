@@ -131,11 +131,11 @@ function renderTaskList() {
     taskList.innerHTML += taskHTML;
 
     // Initialize datepicker
-    const datepickerElement = document.getElementById(`task-date-${task.id}`);
-    if (datepickerElement) {
-      // Initialize your datepicker library if needed
-      // e.g., $(datepickerElement).datepicker();
-    }
+    // const datepickerElement = document.getElementById(`task-date-${task.id}`);
+    // if (datepickerElement) {
+    //   // Initialize your datepicker library if needed
+    //   // e.g., $(datepickerElement).datepicker();
+    //
   });
 
   addCheckboxEventListeners();
@@ -223,7 +223,6 @@ function dropdown() {
 }
 
 // Function Edit Task
-
 function enableEditMode(taskId) {
   const form = document.getElementById(`edit-form-${taskId}`);
   const inputs = form.querySelectorAll('input[type="text"]');
