@@ -107,7 +107,7 @@ function renderTaskList() {
             </div>
           </div>
           <div class="flex items-center ml-auto">
-            <button onClick="dropdown(${task.id})" id="dropdownMenuIconButton-${task.id}" data-dropdown-toggle="dropdownDots-${task.id}"
+            <button onclick="dropdown(${task.id})" id="dropdownMenuIconButton-${task.id}" data-dropdown-toggle="dropdownDots-${task.id}"
               data-dropdown-offset-distance="-38" data-dropdown-offset-skidding="70"
               class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-400 bg-white rounded focus:ring-0 focus:outline-none" type="button">
               <i class="bi bi-three-dots-vertical"></i>
@@ -217,8 +217,8 @@ function cancelTask() {
   document.getElementById("selectedPriority").innerText = "Priority";
 }
 
-function dropdown() {
-  const menu = document.getElementById("dropdownDots");
+function dropdown(taskId) {
+  const menu = document.getElementById(`dropdownDots-${taskId}`);
   menu.classList.toggle("hidden");
 }
 
