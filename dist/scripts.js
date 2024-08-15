@@ -80,7 +80,7 @@ function renderTaskList() {
             <div class="flex gap-3 ms-3">
               <!-- Date Picker -->
               <div class="relative mt-3">
-                <div class="absolute flex items-center justify-center pointer-events-none start-0 ps-3">
+                <div class="absolute inset-y-2 flex items-center pointer-events-none start-0 ps-3">
                   <i class="text-gray-400 me-2 bi bi-calendar-event"></i>
                 </div>
                 <input id="task-date-${task.id}" datepicker datepicker-autohide datepicker-format="mm/dd/yyyy" type="text" value="${task.date}" class=" datepicker px-2 py-1 text-base text-green-500 bg-transparent border border-gray-400 rounded ps-10 placeholder:text-green-500">
