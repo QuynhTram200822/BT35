@@ -80,23 +80,24 @@ function renderTaskList() {
             <div class="flex gap-3 ms-3">
               <!-- Date Picker -->
               <div class="relative mt-3">
-                <div class="absolute flex items-center pointer-events-none start-0 ps-3">
+                <div class="absolute flex items-center justify-center pointer-events-none start-0 ps-3">
                   <i class="text-gray-400 me-2 bi bi-calendar-event"></i>
                 </div>
-                <input id="task-date-${task.id}" type="text" value="${task.date}" class=" datepicker px-2 py-1 text-base text-green-500 bg-transparent border border-gray-400 rounded ps-10 placeholder:text-green-500">
+                <input id="task-date-${task.id}" datepicker datepicker-autohide datepicker-format="mm/dd/yyyy" type="text" value="${task.date}" class=" datepicker px-2 py-1 text-base text-green-500 bg-transparent border border-gray-400 rounded ps-10 placeholder:text-green-500">
                 <div class="absolute inset-y-2 flex items-center pointer-events-none end-0 ps-3">
                   <i class="text-gray-400 me-2 bi bi-x-lg"></i>
                 </div>
               </div>
               <!-- Priority -->
-              <button id="dropdownButton-${task.id}" data-dropdown-toggle="dropdown-${task.id}"
-                class="items-center w-32 px-2 py-1 mt-3 text-sm text-center text-gray-400 bg-transparent border border-gray-400 rounded font-base"
+              <div class="flex relative items-center ">
+              <button id="dropdownButton-${task.id}" data-dropdown-toggle="dropdown-${task.id}" 
+                class="items-center inline-flex  w-32 px-2 py-1 mt-3 text-sm text-center text-gray-400 bg-transparent border border-gray-400 rounded font-base"
                 type="button">
                 <i class="text-gray-400 me-2 bi bi-flag"></i>
                 <span>${task.priority}</span>
               </button>
               <!--Priority Dropdown menu -->
-              <div id="dropdown-${task.id}" class="z-10 hidden bg-white  divide-gray-100 rounded shadow w-44">
+              <div id="dropdown-${task.id}" class="z-10 right-full hidden bg-white divide-gray-100 rounded shadow absolute top-11 w-44 left-0">
                 <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownButton-${task.id}">
                   <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P1"><i class="text-red-500 me-2 bi bi-flag-fill"></i>Priority 1</a></li>
                   <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P2"><i class="text-orange-500 me-2 bi bi-flag-fill"></i>Priority 2</a></li>
@@ -104,18 +105,18 @@ function renderTaskList() {
                   <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P4"><i class="text-green-500 me-2 bi bi-flag-fill"></i>Priority 4</a></li>
                 </ul>
               </div>
+              </div>
             </div>
           </div>
-          <div class="flex items-center ml-auto">
-            <button onclick="dropdown(${task.id})" id="dropdownMenuIconButton-${task.id}" data-dropdown-toggle="dropdownDots-${task.id}"
-              data-dropdown-offset-distance="-38" data-dropdown-offset-skidding="70"
-              class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-400 bg-white rounded focus:ring-0 focus:outline-none" type="button">
+          <div class="flex relative items-center ml-auto ">
+            <button onclick="dropdown(${task.id})"data-dropdown-toggle="dropdownDots-${task.id}" 
+              class="z-20 inline-flex items-center p-2 text-sm font-medium text-center text-gray-400 bg-white rounded focus:ring-0 focus:outline-none" type="button">
               <i class="bi bi-three-dots-vertical"></i>
             </button>
             <!-- Dropdown menu -->
-            <div id="dropdownDots-${task.id}" class="z-10 hidden w-32 bg-white divide-y divide-gray-100 rounded shadow">
+            <div id="dropdownDots-${task.id}" class="z-10 hidden w-32 bg-white divide-y divide-gray-100 rounded shadow absolute end-0 top-7">
               <ul class="m-2 text-sm text-gray-400">
-                <li><a href="#" class="block px-1 py-1 hover:bg-gray-100">Edit</a></li>
+                <li><a onClick="showEditModal(${task.id})" href="#" class="block px-1 py-1 hover:bg-gray-100">Edit</a></li>
                 <li><a onClick="showConfirmModal(${task.id})" href="#" class="block px-1 py-1 hover:bg-gray-100">Delete</a></li>
               </ul>
             </div>
@@ -206,7 +207,7 @@ function addEditForm() {
   });
 }
 
-// Handle Cancel button click
+// Handle Cancel button when Add Task click
 function cancelTask() {
   const form = document.getElementById("task-form");
   form.classList.add("hidden");
@@ -217,6 +218,7 @@ function cancelTask() {
   document.getElementById("selectedPriority").innerText = "Priority";
 }
 
+// Show option Edit or Delete
 function dropdown(taskId) {
   const menu = document.getElementById(`dropdownDots-${taskId}`);
   menu.classList.toggle("hidden");
@@ -277,6 +279,26 @@ function deleteTask(taskId) {
   renderTaskList();
 }
 
+//  Function Show Edit  Modal
+function showEditModal(taskId) {
+  let EditForm = document.getElementById("edit-modal");
+  EditForm.classList.toggle("hidden");
+
+  // Handle Close button click in Edit Form
+  let closeEditForm = document.getElementById("closeEditForm");
+  closeEditForm.onclick = function () {
+    EditForm.style.display = "none";
+  };
+
+  // Handle Delete button click
+  let delTask = document.getElementById("Del-task");
+  delTask.onclick = function () {
+    deleteTask(taskId);
+    EditForm.style.display = "none";
+  };
+}
+
+//  Function Show Comfirm Delete Modal
 function showConfirmModal(taskId) {
   const confirmModal = document.getElementById("confirmModal");
   confirmModal.classList.toggle("hidden");
@@ -305,3 +327,5 @@ function addCheckboxEventListeners() {
     });
   });
 }
+
+document.getElementById("text").innerText = document.title;
