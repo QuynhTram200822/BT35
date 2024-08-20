@@ -436,7 +436,7 @@ function markSubTaskCompleted() {
 // Handle when clicking on CANCEL button in EDIT form
 function cancelSubtask() {
   document.getElementById("subTask").value = "";
-  document.getElementById("subtaskDescription").value = "";
+  document.getElementById("subDescription").value = "";
   document.getElementById("datepicker-sub").value = "";
   document.getElementById("subPriority").innerText = "Priority";
 }
@@ -536,6 +536,8 @@ function saveEdit(subtaskId) {
 // function Edit SUBTASK
 function addEditSubtask() {
   const editSub = document.querySelectorAll(".subTask");
+
+  // document.getElementById("sub-dropdown");
 
   editSub.forEach((form) => {
     form.addEventListener("dblclick", (event) => {
