@@ -10,7 +10,7 @@
   /* font-weight: bold; */
 }
 
-@import "./node_modules/pikaday/css/pikaday.css";
+/* @import "./node_modules/pikaday/css/pikaday.css"; */
 
 input[type="checkbox"],
 input[type="radio"] {

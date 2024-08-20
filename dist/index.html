@@ -95,12 +95,10 @@
               <i class="text-red-600 bi bi-trash-fill"></i>
               Delete Task
             </button>
-
             <button class="py-2 font-semibold text-black bg-transparent ">
               <i class="text-teal-300 bi bi-check2-all"></i>
               Mark Completed
             </button>
-
             <form class="mx-auto w-71">
               <div class="relative">
                 <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
@@ -109,12 +107,9 @@
                 <input type="search" id="default-search"
                   class="block w-full p-3 text-sm text-gray-900 bg-white ps-10 focus:border-teal-300"
                   placeholder="Search Task" required />
-
               </div>
             </form>
           </div>
-
-
         </div>
 
         <!-- Task List -->
@@ -141,6 +136,7 @@
               <input type="text" name="mainDescription" id="mainDescription"
                 class="border-none block w-full py-1.5 text-sm placeholder:text-gray-300 " placeholder="Description">
             </div>
+
             <div class="flex gap-3 ms-3">
               <!-- Date Picker -->
               <div class="relative mt-3 ">
@@ -204,7 +200,7 @@
         </div>
 
         <!-- Modal Confirm -->
-        <div id="confirmModal" class="relative z-10 hidden" aria-labelledby="modal-title" role="dialog"
+        <div id="confirmModal" class="relative hidden z-105" aria-labelledby="modal-title" role="dialog"
           aria-modal="true">
           <div class="fixed inset-0 transition-opacity bg-gray-900 opacity-50" aria-hidden="true"></div>
           <div class="fixed inset-0 z-10 overflow-y-auto">
@@ -232,10 +228,10 @@
         </div>
 
         <!-- Modal Edit -->
-        <div id="edit-modal" tabindex="-1" aria-hidden="true"
-          class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div id="crud-modal" aria-hidden="true"
+          class="fixed inset-0 flex items-center justify-center hidden overflow-x-hidden overflow-y-auto z-100">
           <div class="fixed inset-0 bg-gray-900 opacity-50" aria-hidden="true"></div>
-          <div class="relative w-4/5 p-4 bg-white rounded shadow-lg h-4/5">
+          <div class="relative w-4/5 p-4 bg-white rounded shadow-lg ">
             <!-- Modal content -->
             <div class="relative">
               <!-- Modal header -->
@@ -244,13 +240,11 @@
                 <title>Inbox</title>
                 <div>
                   <button type="button" id="Del-task"
-                    class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-400 bg-transparent rounded-lg hover:bg-gray-200 hover:text-gray-900 ms-auto"
-                    data-modal-toggle="edit-modal">
+                    class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-400 bg-transparent rounded-lg hover:bg-gray-200 hover:text-gray-900 ms-auto">
                     <i class="text-red-600 bi bi-trash-fill"></i>
                   </button>
                   <button type="button" id="closeEditForm"
-                    class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-400 bg-transparent rounded-lg hover:bg-gray-200 hover:text-gray-900 ms-auto"
-                    data-modal-toggle="crud-modal">
+                    class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-400 bg-transparent rounded-lg hover:bg-gray-200 hover:text-gray-900 ms-auto">
                     <i class="bi bi-x-lg"></i>
                   </button>
                 </div>
@@ -258,6 +252,7 @@
               <!-- Modal body -->
               <form class="grid grid-cols-3 p-0">
                 <div class="col-span-2 gap-4 p-4">
+                  <!-- MAINTASK: NAME AND DESCRIPTION -->
                   <div class="flex items-start gap-2">
                     <input id="mark-single-${task.id}" type="checkbox"
                       class="w-4 h-4 mt-2 bg-gray-100 border-gray-300 rounded-full focus:ring-0">
@@ -277,27 +272,31 @@
                     </div>
                   </div>
                   <hr class="m-3 mt-3 border-t border-gray-300">
+                  <!-- Render SubTask -->
+                  <div id="subtaskList" class="mx-2 mt-3">
+                  </div>
+                  <!-- ADD SUBTASK -->
                   <div id="subTask-form" class="mx-6 mt-3 border rounded-lg">
                     <div class="m-3 mt-2">
-                      <!-- Task Name -->
+                      <!-- Subtask Name -->
                       <div class="relative mt-2">
                         <input type="text" name="subTask" id="subTask"
                           class="border-none block w-full py-1.5 text-sm placeholder:text-gray-400"
                           placeholder="Subtask name">
                       </div>
-                      <!-- Description Task -->
+                      <!-- Description Subtask -->
                       <div class="relative mt-1">
                         <input type="text" name="subDescription" id="subDescription"
                           class="border-none block w-full py-1.5 text-sm placeholder:text-gray-300"
                           placeholder="Sub Description">
                       </div>
                       <div class="flex gap-3 ms-3">
-                        <!-- Date Picker -->
-                        <div class="relative mt-3">
+                        <!-- SUB Date Picker -->
+                        <div class="relative mt-3 ">
                           <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
                             <i class="text-gray-400 me-2 bi bi-calendar-event"></i>
                           </div>
-                          <input id="sub-datepicker" datepicker datepicker-autohide datepicker-format="mm/dd/yyyy"
+                          <input id="datepicker-sub" datepicker datepicker-autohide datepicker-format="mm/dd/yyyy"
                             type="text"
                             class="px-2 py-1 text-base text-green-500 bg-transparent border border-gray-400 rounded ps-10 placeholder:text-green-500"
                             placeholder="Today">
@@ -305,14 +304,14 @@
                             <i class="text-gray-400 me-2 bi bi-x-lg"></i>
                           </div>
                         </div>
-                        <!-- Priority -->
+                        <!-- SUB Priority -->
                         <button id="dropdownSubTask" data-dropdown-toggle="sub-dropdown"
                           class="items-center w-32 px-2 py-1 mt-3 text-sm text-center text-gray-400 bg-transparent border border-gray-400 rounded font-base"
                           type="button">
                           <i class="text-gray-400 me-2 bi bi-flag"></i>
                           <span id="subPriority">Priority</span>
                         </button>
-                        <!-- Priority Dropdown menu -->
+                        <!-- SUB Priority Dropdown menu -->
                         <div id="sub-dropdown"
                           class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44">
                           <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownDefaultButton">
@@ -342,16 +341,19 @@
                       <hr class="m-3 mt-3 border-t border-gray-300">
                       <!-- Button ADD and CANCEL Task -->
                       <div class="flex justify-end gap-3 end-0">
-                        <button id="cancelSubtask" class="px-4 py-2 font-bold text-white bg-gray-400 rounded-lg">
+                        <button onclick="cancelSubtask()" class="px-4 py-2 font-bold text-white bg-gray-400 rounded-lg"
+                          type="button">
                           Cancel
                         </button>
-                        <button id="addSubtask" class="px-4 py-2 font-bold text-white bg-teal-300 rounded-lg add-task">
+                        <button onclick="addSubtask(event)" id="addSubTask"
+                          class="px-4 py-2 font-bold text-white bg-teal-300 rounded-lg add-task">
                           Add task
                         </button>
                       </div>
                     </div>
                   </div>
                 </div>
+                <!-- MAINTASK: DUEDATE AND PRIORITY -->
                 <div class="p-4 text-gray-800 bg-gray-100">
                   <div>
                     <p class="mb-2 text-sm font-medium">Project</p>
@@ -366,7 +368,7 @@
                     <div class="absolute inset-y-0 flex items-center pointer-events-none start-0">
                       <i class="me-2 bi bi-calendar-event"></i>
                     </div>
-                    <input id="sub-datepicker" datepicker datepicker-autohide datepicker-format="mm/dd/yyyy" type="text"
+                    <input id="datepicker1" type="text"
                       class="w-full py-1 text-base bg-transparent border-none ps-6 placeholder:text-gray-800"
                       placeholder="Today">
                     <div class="absolute inset-y-0 flex items-center pointer-events-none end-0 me-2">
@@ -411,8 +413,6 @@
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
   </div>
