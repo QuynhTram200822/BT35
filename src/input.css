@@ -41,3 +41,12 @@ input[type="search"]::before,
   /* color: #555; */
   text-decoration: line-through;
 }
+
+.autosave-message {
+  text-align: right;
+  color: greenyellow;
+}
+
+.autosave-message--saving {
+  color: #999999;
+}

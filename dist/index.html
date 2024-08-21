@@ -66,7 +66,6 @@
               <div class="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
                 <i class="bi bi-search"></i>
               </div>
-
               <input type="search" id="default-search" class="block w-48 p-3 text-sm text-gray-400 bg-white ps-10 "
                 placeholder="Type here ..." required />
             </div>
@@ -115,7 +114,6 @@
         <!-- Task List -->
         <div id="task-list" class="mx-2 mt-3">
         </div>
-
         <!-- Add Task Button -->
         <button onclick="addButton()"
           class="px-4 py-2 mt-6 text-sm bg-transparent button button--add-task add ms-3 text-black-text">
@@ -259,13 +257,13 @@
                     <div>
                       <!-- Task Name -->
                       <div class="relative">
-                        <input type="text" name="mainTask" id="mainTask"
+                        <input type="text" name="modal-task-name" id="modal-task-name"
                           class="border-none block w-full py-1.5 text-sm placeholder:text-gray-400"
                           placeholder="Task name">
                       </div>
                       <!-- Description Task -->
                       <div class="relative mt-1">
-                        <input type="text" name="mainDescription" id="mainDescription"
+                        <input type="text" name="modal-task-description" id="modal-task-description"
                           class="border-none block w-full py-1.5 text-sm placeholder:text-gray-300"
                           placeholder="Description">
                       </div>
@@ -368,8 +366,8 @@
                     <div class="absolute inset-y-0 flex items-center pointer-events-none start-0">
                       <i class="me-2 bi bi-calendar-event"></i>
                     </div>
-                    <input id="datepicker1" type="text"
-                      class="w-full py-1 text-base bg-transparent border-none ps-6 placeholder:text-gray-800"
+                    <input id="modal-task-due-date" type="text"
+                      class="datepicker w-full py-1 text-base bg-transparent border-none ps-6 placeholder:text-gray-800"
                       placeholder="Today">
                     <div class="absolute inset-y-0 flex items-center pointer-events-none end-0 me-2">
                       <i class="me-2 bi bi-x-lg"></i>
@@ -381,7 +379,7 @@
                     class="flex justify-start w-full mt-3 text-sm text-gray-800 bg-transparent border-none font-base"
                     type="button">
                     <i class="me-3 bi bi-flag"></i>
-                    <span id="subPriority">Priority</span>
+                    <span id="modal-task-priority">Priority</span>
                   </button>
                   <!-- Priority Dropdown menu -->
                   <div id="dropdownEditForm" class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44">
@@ -408,11 +406,14 @@
                       </li>
                     </ul>
                   </div>
+
+                  <div class="autosave-message "></div>
                 </div>
               </form>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </div>
