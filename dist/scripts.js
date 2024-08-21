@@ -52,95 +52,87 @@ function addTask() {
   cancelTask();
 }
 
+// Get value MAIN TASK for Modal Edit
+// function getValueInModal(task) {
+//   document.getElementById("modal-task-name").value = `${task.name}`;
+//   document.getElementById(
+//     "modal-task-description"
+//   ).value = `${task.description}`;
+//   document.getElementById("modal-task-due-date").value = `${task.date}`;
+//   document.getElementById(
+//     "modal-task-priority"
+//   ).textContent = `${task.priority}`;
+// }
+
 //Function update MAIN TASK in edit modal
-
 document.addEventListener("DOMContentLoaded", () => {
-  const promoValue = document.getElementById("modal-task-name");
+  const nameInput = document.getElementById("modal-task-name");
+  const descriptionInput = document.getElementById("modal-task-description");
 
-  if (promoValue) {
-    promoValue.addEventListener("change", (e) => {
+  if (nameInput && descriptionInput) {
+    nameInput.addEventListener("change", (e) => {
+      const newNameValue = e.target.value;
+
+      // Cập nhật giá trị tên trong tất cả các phần tử và trong mảng tasks
       tasks.forEach((task) => {
         let copyTaskName = document.getElementById(`task-name-${task.id}`);
-        copyTaskName.value = e.target.value;
+        if (copyTaskName) {
+          copyTaskName.value = newNameValue;
+          task.name = newNameValue;
+        }
+      });
+    });
 
-        task.name = copyTaskName.value;
+    descriptionInput.addEventListener("change", (e) => {
+      const newDescriptionValue = e.target.value;
+      // Cập nhật giá trị mô tả trong tất cả các phần tử và trong mảng tasks
+      tasks.forEach((task) => {
+        let copyTaskDescription = document.getElementById(
+          `task-description-${task.id}`
+        );
+        if (copyTaskDescription) {
+          copyTaskDescription.value = newDescriptionValue;
+          task.description = newDescriptionValue;
+        }
       });
     });
   }
 });
 
-function getValueInModal(task) {
-  currentTask = task;
-
-  document.getElementById("modal-task-name").value = `${task.name}`;
-  document.getElementById(
-    "modal-task-description"
-  ).value = `${task.description}`;
-  document.getElementById("modal-task-due-date").value = `${task.date}`;
-  document.getElementById(
-    "modal-task-priority"
-  ).textContent = `${task.priority}`;
-
-  // Đặt độ ưu tiên cho task
-  const priorityMap = {
-    P1: "Priority 1",
-    P2: "Priority 2",
-    P3: "Priority 3",
-    P4: "Priority 4",
-  };
-  const priorityElement = document.getElementById("modal-task-priority");
-  priorityElement.textContent = priorityMap[task.priority] || "Priority";
-}
-
-function saveMainTask() {
-  const name = document.getElementById("modal-task-name").value;
-  const description = document.getElementById("modal-task-description").value;
-  const dueDate = document.getElementById("modal-task-due-date").value;
-
-  const priorityElement = document.getElementById("modal-task-priority");
-  const priorityMap = {
-    "Priority 1": "P1",
-    "Priority 2": "P2",
-    "Priority 3": "P3",
-    "Priority 4": "P4",
-  };
-  const priority = priorityMap[priorityElement.textContent] || "P1"; // Default to P1 if not found
-
-  // Thực hiện cập nhật task ở đây (ví dụ: gọi API hoặc cập nhật trực tiếp)
-  console.log("Saving task with:", { name, description, dueDate, priority });
-}
-
 // Đăng ký sự kiện cho các item trong dropdown độ ưu tiên
 document.querySelectorAll("#dropdownEditForm a").forEach((item) => {
   item.addEventListener("click", (e) => {
     e.preventDefault();
-    const priority = e.target.dataset.priority;
-    const priorityMap = {
-      P1: "Priority 1",
-      P2: "Priority 2",
-      P3: "Priority 3",
-      P4: "Priority 4",
-    };
-    document.getElementById("modal-task-priority").textContent =
-      priorityMap[priority] || "Priority";
-    document.getElementById("dropdownEditForm").classList.add("hidden");
-  });
-});
 
-// Đăng ký sự kiện cho các item trong dropdown độ ưu tiên của Subtask
-document.querySelectorAll("#sub-dropdown a").forEach((item) => {
-  item.addEventListener("click", (e) => {
-    e.preventDefault();
+    // Lấy giá trị ưu tiên từ thuộc tính data
     const priority = e.target.dataset.priority;
+
+    // Định nghĩa bản đồ ưu tiên
     const priorityMap = {
-      P1: "Priority 1",
-      P2: "Priority 2",
-      P3: "Priority 3",
-      P4: "Priority 4",
+      P1: "P1",
+      P2: "P2",
+      P3: "P3",
+      P4: "P4",
     };
-    document.getElementById("subPriority").textContent =
-      priorityMap[priority] || "Priority";
-    document.getElementById("sub-dropdown").classList.add("hidden");
+
+    // Cập nhật giá trị vào phần tử modal-task-priority
+    const modalPriorityElement = document.getElementById("modal-task-priority");
+    modalPriorityElement.textContent = priorityMap[priority] || "Priority";
+
+    // Cập nhật giá trị vào phần tử hiển thị task-priority-display
+    tasks.forEach((task) => {
+      const taskPriorityDisplay = document.getElementById(
+        `task-priority-display-${task.id}`
+      );
+      if (taskPriorityDisplay) {
+        taskPriorityDisplay.textContent =
+          priorityMap[priority] || "Task Priority";
+        task.priority = taskPriorityDisplay.textContent;
+
+        // Ẩn dropdown sau khi chọn
+        document.getElementById("dropdownEditForm").classList.add("hidden");
+      }
+    });
   });
 });
 
@@ -185,7 +177,7 @@ function renderTaskList() {
                 class="items-center inline-flex  w-32 px-2 py-1 mt-3 text-sm text-center text-gray-400 bg-transparent border border-gray-400 rounded font-base"
                 type="button">
                 <i class="text-gray-400 me-2 bi bi-flag"></i>
-                <span>${task.priority}</span>
+                <span id="task-priority-display-${task.id}">${task.priority}</span>
               </button>
               <!--Priority Dropdown menu -->
               <div id="dropdown-${task.id}" class="z-10 right-full hidden bg-white divide-gray-100 rounded shadow absolute top-11 w-44 left-0">
@@ -388,6 +380,19 @@ function showEditModal(taskId) {
   delTask.onclick = function () {
     showConfirmModal(taskId);
   };
+
+  // Get MAINTASK value in Modal Edit
+  const task = tasks.find((t) => t.id === taskId);
+
+  if (!task) return;
+
+  document.getElementById("modal-task-name").value = task.name;
+  document.getElementById("modal-task-description").value = task.description;
+  document.getElementById("modal-task-due-date").value = task.date;
+
+  // Set priority
+  const priorityElement = document.getElementById("modal-task-priority");
+  priorityElement.textContent = `P${task.priority.charAt(1)}`;
 }
 
 // Function mark completed
@@ -692,21 +697,23 @@ function addEditSubtask() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  // Khởi tạo Datepicker cho input với id 'datepicker1'
-  new Datepicker(document.getElementById("modal-task-due-date"), {
-    format: "mm/dd/yyyy",
-    autohide: true,
-  });
+// // Function edit due day in modal edit
+// document.addEventListener("DOMContentLoaded", function () {
+//   // Khởi tạo Datepicker cho input với id 'datepicker1'
 
-  // Đăng ký sự kiện để xử lý khi người dùng chọn ngày
-  document
-    .getElementById("modal-task-due-date")
-    .addEventListener("changeDate", function (event) {
-      const selectedDate = event.target.value;
-      console.log("Selected date:", selectedDate);
+//   new Datepicker(document.getElementById("modal-task-due-date"), {
+//     format: "mm/dd/yyyy",
+//     autohide: true,
+//   });
 
-      // Cập nhật giá trị ngày tháng vào phần tử hoặc thực hiện các hành động khác
-      document.querySelector("#text").textContent = selectedDate; // Ví dụ cập nhật ngày cho phần tử với ID 'text'
-    });
-});
+//   // Đăng ký sự kiện để xử lý khi người dùng chọn ngày
+//   document
+//     .getElementById("modal-task-due-date")
+//     .addEventListener("changeDate", function (event) {
+//       const selectedDate = event.target.value;
+//       console.log("Selected date:", selectedDate);
+
+//       // Cập nhật giá trị ngày tháng vào phần tử hoặc thực hiện các hành động khác
+//       document.querySelector("#text").textContent = selectedDate; // Ví dụ cập nhật ngày cho phần tử với ID 'text'
+//     });
+// });

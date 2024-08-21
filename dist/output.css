@@ -1979,15 +1979,6 @@ input[type="search"]::before,
   text-decoration: line-through;
 }
 
-.autosave-message {
-  text-align: right;
-  color: greenyellow;
-}
-
-.autosave-message--saving {
-  color: #999999;
-}
-
 .placeholder\:text-gray-300::-moz-placeholder {
   --tw-text-opacity: 1;
   color: rgb(209 213 219 / var(--tw-text-opacity));
