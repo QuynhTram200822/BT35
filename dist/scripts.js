@@ -29,6 +29,7 @@ function formatDate(dateString) {
 //Function Add Task
 let tasks = [];
 let idCounter = 1;
+let currentEditTaskId = null;
 function addTask() {
   const taskName = document.getElementById("mainTask").value;
   const taskDescription = document.getElementById("mainDescription").value;
@@ -50,72 +51,6 @@ function addTask() {
   renderTaskList();
   cancelTask();
 }
-
-//Function update MAIN TASK in edit modal
-document.addEventListener("DOMContentLoaded", () => {
-  const nameInput = document.getElementById("modal-task-name");
-  const descriptionInput = document.getElementById("modal-task-description");
-
-  if (nameInput && descriptionInput) {
-    nameInput.addEventListener("change", (e) => {
-      const newNameValue = e.target.value;
-
-      // Cập nhật giá trị tên trong tất cả các phần tử và trong mảng tasks
-      tasks.forEach((task) => {
-        let copyTaskName = document.getElementById(`task-name-${task.id}`);
-        if (copyTaskName) {
-          copyTaskName.value = newNameValue;
-          task.name = newNameValue;
-        }
-      });
-    });
-
-    descriptionInput.addEventListener("change", (e) => {
-      const newDescriptionValue = e.target.value;
-      // Cập nhật giá trị mô tả trong tất cả các phần tử và trong mảng tasks
-      tasks.forEach((task) => {
-        let copyTaskDescription = document.getElementById(
-          `task-description-${task.id}`
-        );
-        if (copyTaskDescription) {
-          copyTaskDescription.value = newDescriptionValue;
-          task.description = newDescriptionValue;
-        }
-      });
-    });
-  }
-});
-
-// Update Priority for MAIN TASK in modal edit
-document.querySelectorAll("#dropdownEditForm a").forEach((item) => {
-  item.addEventListener("click", (e) => {
-    e.preventDefault();
-
-    const priority = e.target.dataset.priority;
-
-    const priorityMap = {
-      P1: "P1",
-      P2: "P2",
-      P3: "P3",
-      P4: "P4",
-    };
-
-    const modalPriorityElement = document.getElementById("modal-task-priority");
-    modalPriorityElement.textContent = priorityMap[priority] || "Priority";
-
-    tasks.forEach((task) => {
-      const taskPriorityDisplay = document.getElementById(
-        `task-priority-display-${task.id}`
-      );
-      if (taskPriorityDisplay) {
-        taskPriorityDisplay.textContent = priorityMap[priority] || "Priority";
-        task.priority = taskPriorityDisplay.textContent;
-
-        document.getElementById("dropdownEditForm").classList.add("hidden");
-      }
-    });
-  });
-});
 
 function renderTaskList() {
   const taskList = document.getElementById("task-list");
@@ -189,7 +124,7 @@ function renderTaskList() {
         </div>
         <hr class="mt-3 border-t border-gray-300">
         <div id="edit-buttons-${task.id}" class="mt-3 flex justify-end gap-3 end-0 edit-buttons hidden">
-          <button onClick="cancelEdit(${task.id})" class="px-4 py-2 font-bold text-white bg-gray-400 rounded-lg">Cancel</button>
+          <button onClick="cancelTask(${task.id})" class="px-4 py-2 font-bold text-white bg-gray-400 rounded-lg">Cancel</button>
           <button onClick="saveTask(${task.id})" class="px-4 py-2 font-bold text-white bg-teal-300 rounded-lg">Save</button>
         </div>
       </div>
@@ -202,6 +137,81 @@ function renderTaskList() {
   addEditForm();
 }
 
+//Function update name, description MAIN TASK in edit modal
+document.addEventListener("DOMContentLoaded", () => {
+  const nameInput = document.getElementById("modal-task-name");
+  const descriptionInput = document.getElementById("modal-task-description");
+
+  if (nameInput && descriptionInput) {
+    nameInput.addEventListener("change", (e) => {
+      const newNameValue = e.target.value;
+
+      tasks = tasks.map((task) => ({
+        ...task,
+        name: task.id === currentEditTaskId ? newNameValue : task.name,
+      }));
+      renderTaskList();
+    });
+
+    descriptionInput.addEventListener("change", (e) => {
+      const newDescriptionValue = e.target.value;
+
+      tasks = tasks.map((task) => ({
+        ...task,
+        description:
+          task.id === currentEditTaskId
+            ? newDescriptionValue
+            : task.description,
+      }));
+      renderTaskList();
+    });
+  }
+});
+
+// Update Priority for MAIN TASK in modal edit
+document.querySelectorAll("#dropdownEditForm a").forEach((item) => {
+  item.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    const priority = e.target.dataset.priority;
+
+    const priorityMap = {
+      P1: "P1",
+      P2: "P2",
+      P3: "P3",
+      P4: "P4",
+    };
+
+    const modalPriorityElement = document.getElementById("modal-task-priority");
+    modalPriorityElement.textContent = priorityMap[priority] || "Priority";
+
+    tasks = tasks.map((task) => ({
+      ...task,
+      priority:
+        task.id === currentEditTaskId
+          ? modalPriorityElement.textContent
+          : task.priority,
+    }));
+    renderTaskList();
+  });
+});
+
+// // Function edit due day in modal edit
+document.addEventListener("DOMContentLoaded", function () {
+  document
+    .getElementById("modal-task-due-date")
+    .addEventListener("changeDate", function (event) {
+      const selectedDate = formatDate(event.target.value);
+
+      tasks = tasks.map((task) => ({
+        ...task,
+        date: task.id === currentEditTaskId ? selectedDate : task.date,
+      }));
+      renderTaskList();
+    });
+});
+
+// Double click to EDIT SUBTASK
 function addEditForm() {
   const editForms = document.querySelectorAll(".edit-form");
 
@@ -347,6 +357,7 @@ function showConfirmModal(taskId) {
 
 //  Function Show Edit Modal
 function showEditModal(taskId) {
+  currentEditTaskId = taskId;
   let EditForm = document.getElementById("crud-modal");
   EditForm.classList.remove("hidden");
 
@@ -602,7 +613,6 @@ function saveEdit(subtaskId) {
     input.setAttribute("readonly", "readonly");
   });
 
-  // Re-render the subtask list to reflect the changes
   renderSubtasks();
 }
 
@@ -677,20 +687,3 @@ function addEditSubtask() {
     });
   });
 }
-
-// // Function edit due day in modal edit
-document.addEventListener("DOMContentLoaded", function () {
-  document
-    .getElementById("modal-task-due-date")
-    .addEventListener("changeDate", function (event) {
-      const selectedDate = formatDate(event.target.value);
-
-      tasks.forEach((task) => {
-        let copyDuedate = document.getElementById(`task-date-${task.id}`);
-        if (copyDuedate) {
-          copyDuedate.value = selectedDate;
-          task.date = selectedDate;
-        }
-      });
-    });
-});
