@@ -43,6 +43,7 @@ function addTask() {
     date: taskDate,
     priority: taskPriority,
     isCompleted: false,
+    isChecked: false,
   };
 
   tasks.push(newTask);
@@ -57,17 +58,18 @@ function renderTaskList() {
   taskList.innerHTML = "";
 
   tasks.forEach((task) => {
-    const completedClass = task.isCompleted ? "checked" : "";
-    const radioboxChecked = task.isCompleted ? "checked" : "";
+    const completedClass = task.isChecked ? "checked" : "";
+    const radioBoxChecked = task.isChecked ? "checked" : "";
+    const checkBoxChecked = task.isCompleted ? "checked" : "";
 
     const taskHTML = `
       <div id="edit-form-${task.id}" class="mx-2 mt-3 edit-form">
         <div class="flex items-start justify-between p-4">
           <div>
             <div class="flex items-start gap-2 ${completedClass}">
-              <input id="checkbox-${task.id}" type="checkbox" class="w-4 h-4 mt-2 bg-gray-100 border-gray-300 rounded focus:ring-0">
-              <input ${radioboxChecked} id="mark-single-${task.id}" type="checkbox" class="w-4 h-4 mt-2 bg-gray-100 border-gray-300 rounded-full focus:ring-0">
-              <div>
+              <input ${checkBoxChecked} id="checkbox-${task.id}" type="checkbox" class="checkbox w-4 h-4 mt-2 bg-gray-100 border-gray-300 rounded focus:ring-0">
+              <input ${radioBoxChecked} id="mark-single-${task.id}"  type="checkbox" class=" w-4 h-4 mt-2 bg-gray-100 border-gray-300 rounded-full focus:ring-0">
+              <div id="test-${task.id}">
                 <div>
                   <input id="task-name-${task.id}" type="text" value="${task.name}" class="border-none block w-full py-1.5 text-sm placeholder:text-gray-400" placeholder="Task name" readonly>
                 </div>
@@ -132,10 +134,119 @@ function renderTaskList() {
     taskList.innerHTML += taskHTML;
   });
 
-  addCheckboxEventListeners();
+  isChecked();
+  isCompleted();
   cancelTask();
   addEditForm();
 }
+
+// Function mark 1 task completed
+function isChecked() {
+  tasks.forEach((task) => {
+    const markSingle = document.getElementById(`mark-single-${task.id}`);
+    markSingle.addEventListener("change", function () {
+      task.isChecked = this.checked;
+      renderTaskList();
+    });
+  });
+}
+
+// Mark muliti tassk Completed
+function isCompleted() {
+  tasks.forEach((task) => {
+    const checkedTask = document.getElementById(`checkbox-${task.id}`);
+
+    checkedTask.addEventListener("change", function () {
+      task.isCompleted = this.checked;
+
+      updateButtonVisibility();
+      renderTaskList();
+    });
+  });
+}
+
+// Hàm cập nhật trạng thái của các nút
+function updateButtonVisibility() {
+  // Kiểm tra xem có ít nhất một checkbox nào được chọn không
+  let checkboxes = Array.from(
+    tasks.map((task) => document.getElementById(`checkbox-${task.id}`))
+  );
+
+  // Kiểm tra số lượng checkbox được chọn
+  let checkedCount = checkboxes.filter((checkbox) => checkbox.checked).length;
+
+  // Kiểm tra nếu tất cả các todo đều được chọn
+  let allChecked =
+    checkboxes.length > 0 && checkboxes.every((checkbox) => checkbox.checked);
+
+  // Cập nhật trạng thái hiển thị của các nút
+  if (checkedCount > 0) {
+    document.getElementById("delTask").classList.remove("hidden");
+    document
+      .getElementById("markCompletedBtn")
+      .classList.toggle("hidden", allChecked);
+    document
+      .getElementById("unMarkCompletedBtn")
+      .classList.toggle("hidden", !allChecked);
+  } else {
+    document.getElementById("delTask").classList.add("hidden");
+    document.getElementById("markCompletedBtn").classList.add("hidden");
+    document.getElementById("unMarkCompletedBtn").classList.add("hidden");
+  }
+}
+updateButtonVisibility();
+
+// function to delete selected tasks
+function deleteTodos() {
+  // Lấy tất cả các checkbox được chọn
+  let checkboxes = Array.from(
+    document.querySelectorAll('input[name="checkbox"]:checked')
+  );
+
+  if (checkboxes.length > 0) {
+    // Có ít nhất một checkbox được chọn
+    // Lấy danh sách các id của todos được chọn
+    let selectedIds = checkboxes.map((checkbox) =>
+      parseInt(checkbox.id.replace("checkbox-", ""), 10)
+    );
+
+    // Cập nhật danh sách tasks để loại bỏ các todo được chọn
+    tasks = tasks.filter((task) => !selectedIds.includes(task.id));
+  } else {
+    // Không có checkbox nào được chọn
+    // Xóa tất cả các todos
+    tasks = [];
+  }
+
+  // Cập nhật giao diện người dùng sau khi xóa todos
+  // updateTaskList();
+  renderTaskList();
+
+  // Cập nhật trạng thái hiển thị của các nút
+  updateButtonVisibility();
+}
+
+//Function update UI after delete tasks
+function updateTaskList() {
+  const taskList = document.getElementById("task-list");
+  taskList.innerHTML = "";
+
+  // Tạo lại danh sách nhiệm vụ
+  tasks.forEach((task) => {
+    const taskElement = `
+      <input type="checkbox" id="checkbox-${task.id}" name="checkbox">
+      <label for="checkbox-${task.id}">${task.text}</label>
+    `;
+    taskListContainer.appendChild(taskElement);
+  });
+
+  // Gán sự kiện lại cho các checkbox
+  isCompleted();
+}
+
+// Function to Mark all tasks as completed
+
+// Function to UnMark all tasks as uncompleted
 
 //Function update name, description MAIN TASK in edit modal
 document.addEventListener("DOMContentLoaded", () => {
@@ -196,7 +307,7 @@ document.querySelectorAll("#dropdownEditForm a").forEach((item) => {
   });
 });
 
-// // Function edit due day in modal edit
+// Function edit due day in modal edit
 document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("modal-task-due-date")
@@ -385,17 +496,6 @@ function showEditModal(taskId) {
   // Set priority
   const priorityElement = document.getElementById("modal-task-priority");
   priorityElement.textContent = `P${task.priority.charAt(1)}`;
-}
-
-// Function mark completed
-function addCheckboxEventListeners() {
-  tasks.forEach((task) => {
-    const markSingle = document.getElementById(`mark-single-${task.id}`);
-    markSingle.addEventListener("change", function () {
-      task.isCompleted = this.checked;
-      renderTaskList();
-    });
-  });
 }
 
 document.getElementById("text").innerText = document.title;
