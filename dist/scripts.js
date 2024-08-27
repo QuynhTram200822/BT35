@@ -175,25 +175,29 @@ function updateButtonVisibility() {
   // Kiểm tra số lượng checkbox được chọn
   let checkedCount = checkboxes.filter((checkbox) => checkbox.checked).length;
 
-  // Kiểm tra nếu tất cả các nhiệm vụ đều chưa hoàn thành và đều được chọn
-  let allNotCompletedAndChecked =
+  let allChecked =
+    checkboxes.length > 0 && checkboxes.every((checkbox) => checkbox.checked);
+
+  let allCompletedAndChecked =
     tasks.length > 0 &&
     tasks.every((task) => task.isCompleted && task.isChecked);
 
   // Cập nhật trạng thái hiển thị của các nút
   if (checkedCount > 0) {
     document.getElementById("delTask").classList.remove("hidden");
-    document.getElementById("markCompletedBtn").classList.toggle("hidden");
+    document
+      .getElementById("markCompletedBtn")
+      .classList.toggle("hidden", allCompletedAndChecked);
     document
       .getElementById("unMarkCompletedBtn")
-      .classList.toggle("hidden", !allNotCompletedAndChecked);
+      .classList.toggle("hidden", !allCompletedAndChecked);
   } else {
     // Khi không có checkbox nào được chọn
     document.getElementById("delTask").classList.add("hidden");
     document.getElementById("markCompletedBtn").classList.add("hidden");
     document
       .getElementById("unMarkCompletedBtn")
-      .classList.toggle("hidden", !allNotCompletedAndChecked);
+      .classList.toggle("hidden", !allCompletedAndChecked);
   }
 }
 updateButtonVisibility();
