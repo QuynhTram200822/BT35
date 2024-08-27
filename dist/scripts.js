@@ -140,6 +140,101 @@ function renderTaskList() {
   addEditForm();
 }
 
+// Function to render Task List when search
+function renderSearchTaskList(filteredTasks) {
+  const taskList = document.getElementById("task-list");
+  taskList.innerHTML = "";
+
+  filteredTasks.forEach((task) => {
+    const taskElement = `
+    <div id="edit-form-${task.id}" class="mx-2 mt-3 edit-form">
+    <div class="flex items-start justify-between p-4">
+      <div>
+        <div class="flex items-start gap-2 ">
+          <input  id="checkbox-${task.id}" type="checkbox" class="checkbox w-4 h-4 mt-2 bg-gray-100 border-gray-300 rounded focus:ring-0">
+          <input id="mark-single-${task.id}"  type="checkbox" class=" w-4 h-4 mt-2 bg-gray-100 border-gray-300 rounded-full focus:ring-0">
+          <div id="test-${task.id}">
+            <div>
+              <input id="task-name-${task.id}" type="text" value="${task.name}" class="border-none block w-full py-1.5 text-sm placeholder:text-gray-400" placeholder="Task name" readonly>
+            </div>
+            <div class="mt-1">
+              <input id="task-description-${task.id}" type="text" value="${task.description}" class="border-none block w-full py-1.5 text-sm placeholder:text-gray-300" placeholder="Description" readonly>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-3 ms-3">
+          <!-- Date Picker -->
+          <div class="relative mt-3">
+            <div class="absolute inset-y-2 flex items-center pointer-events-none start-0 ps-3">
+              <i class="text-gray-400 me-2 bi bi-calendar-event"></i>
+            </div>
+            <input id="task-date-${task.id}" datepicker datepicker-autohide datepicker-format="mm/dd/yyyy" type="text" value="${task.date}" class=" datepicker px-2 py-1 text-base text-green-500 bg-transparent border border-gray-400 rounded ps-10 placeholder:text-green-500">
+            <div class="absolute inset-y-2 flex items-center pointer-events-none end-0 ps-3">
+              <i class="text-gray-400 me-2 bi bi-x-lg"></i>
+            </div>
+          </div>
+          <!-- Priority -->
+          <div class="flex relative items-center ">
+          <button id="dropdownButton-${task.id}" data-dropdown-toggle="dropdown-${task.id}" 
+            class="items-center inline-flex  w-32 px-2 py-1 mt-3 text-sm text-center text-gray-400 bg-transparent border border-gray-400 rounded font-base"
+            type="button">
+            <i class="text-gray-400 me-2 bi bi-flag"></i>
+            <span id="task-priority-display-${task.id}">${task.priority}</span>
+          </button>
+          <!--Priority Dropdown menu -->
+          <div id="dropdown-${task.id}" class="z-10 right-full hidden bg-white divide-gray-100 rounded shadow absolute top-11 w-44 left-0">
+            <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownButton-${task.id}">
+              <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P1"><i class="text-red-500 me-2 bi bi-flag-fill"></i>Priority 1</a></li>
+              <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P2"><i class="text-orange-500 me-2 bi bi-flag-fill"></i>Priority 2</a></li>
+              <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P3"><i class="text-blue-500 me-2 bi bi-flag-fill"></i>Priority 3</a></li>
+              <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P4"><i class="text-green-500 me-2 bi bi-flag-fill"></i>Priority 4</a></li>
+            </ul>
+          </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex relative items-center ml-auto ">
+        <button onclick="dropdown(${task.id})
+        "data-dropdown-toggle="dropdownDots-${task.id}" 
+          class="z-10 inline-flex items-center p-2 text-sm font-medium text-center text-gray-400 bg-white rounded focus:ring-0 focus:outline-none" type="button">
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        <!-- Dropdown menu -->
+        <div id="dropdownDots-${task.id}" class="hidden w-32 bg-white divide-y divide-gray-100 rounded shadow absolute end-0 top-7">
+          <ul class="m-2 text-sm text-gray-400">
+            <li><a onClick="showEditModal(${task.id})" href="#" class="block px-1 py-1 hover:bg-gray-100">Edit</a></li>
+            <li><a onClick="showConfirmModal(${task.id})" href="#" class="block px-1 py-1 hover:bg-gray-100">Delete</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <hr class="mt-3 border-t border-gray-300">
+    <div id="edit-buttons-${task.id}" class="mt-3 flex justify-end gap-3 end-0 edit-buttons hidden">
+      <button onClick="cancelTask(${task.id})" class="px-4 py-2 font-bold text-white bg-gray-400 rounded-lg">Cancel</button>
+      <button onClick="saveTask(${task.id})" class="px-4 py-2 font-bold text-white bg-teal-300 rounded-lg">Save</button>
+    </div>
+  </div>
+    `;
+
+    taskList.innerHTML += taskElement;
+  });
+}
+
+// Function search by title or description
+function searchTasks() {
+  const searchInputValue = (searchInput.value || "").toLowerCase();
+  const filteredTasks = tasks.filter(
+    (task) =>
+      (task.name || "").toLowerCase().includes(searchInputValue) ||
+      (task.description || "").toLowerCase().includes(searchInputValue)
+  );
+
+  renderSearchTaskList(filteredTasks);
+}
+
+const searchInput = document.getElementById("search-input");
+searchInput.addEventListener("input", searchTasks);
+
 // Function mark 1 task completed
 function isCompleted() {
   tasks.forEach((task) => {
@@ -174,9 +269,6 @@ function updateButtonVisibility() {
 
   // Kiểm tra số lượng checkbox được chọn
   let checkedCount = checkboxes.filter((checkbox) => checkbox.checked).length;
-
-  let allChecked =
-    checkboxes.length > 0 && checkboxes.every((checkbox) => checkbox.checked);
 
   let allCompletedAndChecked =
     tasks.length > 0 &&
