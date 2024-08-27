@@ -84,7 +84,7 @@ function renderTaskList() {
                 <div class="absolute inset-y-2 flex items-center pointer-events-none start-0 ps-3">
                   <i class="text-gray-400 me-2 bi bi-calendar-event"></i>
                 </div>
-                <input id="task-date-${task.id}" datepicker datepicker-autohide datepicker-format="mm/dd/yyyy" type="text" value="${task.date}" class=" datepicker px-2 py-1 text-base text-green-500 bg-transparent border border-gray-400 rounded ps-10 placeholder:text-green-500">
+                <input id="task-date-${task.id}"  type="text" value="${task.date}" class=" datepicker px-2 py-1 text-base text-green-500 bg-transparent border border-gray-400 rounded ps-10 placeholder:text-green-500">
                 <div class="absolute inset-y-2 flex items-center pointer-events-none end-0 ps-3">
                   <i class="text-gray-400 me-2 bi bi-x-lg"></i>
                 </div>
@@ -527,11 +527,24 @@ function addEditForm() {
 
         // Add event listener to handle date change
         if (taskDateInput) {
-          taskDateInput.addEventListener("change", (event) => {
-            const newDate = formatDate(event.target.value);
-            const taskId = form.id.split("-").pop();
-            const task = tasks.find((task) => task.id == taskId);
-            if (task) task.date = newDate;
+          const taskId = form.id.split("-").pop();
+          const task = tasks.find((task) => task.id == taskId);
+
+          if (task) {
+            taskDateInput.value = task.date;
+          }
+          new Datepicker(taskDateInput, {
+            format: "dd MM yyyy",
+            autohide: true,
+            onSelect: (date) => {
+              const taskId = form.id.split("-").pop();
+              const task = tasks.find((task) => task.id == taskId);
+
+              if (task) {
+                task.date = date;
+                renderTaskList();
+              }
+            },
           });
         }
 
@@ -601,7 +614,7 @@ function saveTask(taskId) {
 
   renderTaskList();
 }
-// FUNCTION NOT YET COMPLETE
+// Function Cancel when Edit
 function cancelEdit(taskId) {
   const taskElement = document.getElementById(`edit-form-${taskId}`);
   const inputs = taskElement.querySelectorAll('input[type="text"]');
@@ -929,11 +942,26 @@ function addEditSubtask() {
 
         // Add event listener to handle date change
         if (taskDateInput) {
-          taskDateInput.addEventListener("change", (event) => {
-            const newDate = formatDate(event.target.value);
-            const subtaskId = form.id.split("-").pop();
-            const subtask = subTasks.find((subtask) => subtask.id == subtaskId);
-            if (subtask) subtask.date = newDate;
+          const subtaskId = form.id.split("-").pop();
+          const subtask = subTasks.find((subtask) => subtask.id == subtaskId);
+
+          if (subtask) {
+            taskDateInput.value = subtask.date;
+          }
+          new Datepicker(taskDateInput, {
+            format: "dd MM yyyy",
+            autohide: true,
+            onSelect: (date) => {
+              const subtaskId = form.id.split("-").pop();
+              const subtask = subTasks.find(
+                (subtask) => subtask.id == subtaskId
+              );
+
+              if (subtask) {
+                subtask.date = date;
+                renderSubtasks();
+              }
+            },
           });
         }
 
