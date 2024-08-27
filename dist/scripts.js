@@ -126,7 +126,7 @@ function renderTaskList() {
         </div>
         <hr class="mt-3 border-t border-gray-300">
         <div id="edit-buttons-${task.id}" class="mt-3 flex justify-end gap-3 end-0 edit-buttons hidden">
-          <button onClick="cancelTask(${task.id})" class="px-4 py-2 font-bold text-white bg-gray-400 rounded-lg">Cancel</button>
+          <button onClick="cancelEdit(${task.id})" class="px-4 py-2 font-bold text-white bg-gray-400 rounded-lg">Cancel</button>
           <button onClick="saveTask(${task.id})" class="px-4 py-2 font-bold text-white bg-teal-300 rounded-lg">Save</button>
         </div>
       </div>
@@ -246,7 +246,7 @@ function isCompleted() {
   });
 }
 
-// Mark muliti tassk Completed
+// Mark muliti task Completed
 function isChecked() {
   tasks.forEach((task) => {
     const checkedTask = document.getElementById(`checkbox-${task.id}`);
@@ -260,21 +260,18 @@ function isChecked() {
   });
 }
 
-// Hàm cập nhật trạng thái của các nút
+// Function to show Delete | Mark completed | Mark Uncompleted or not
 function updateButtonVisibility() {
-  // Lấy tất cả các checkbox
   let checkboxes = tasks.map((task) =>
     document.getElementById(`checkbox-${task.id}`)
   );
 
-  // Kiểm tra số lượng checkbox được chọn
   let checkedCount = checkboxes.filter((checkbox) => checkbox.checked).length;
 
   let allCompletedAndChecked =
     tasks.length > 0 &&
     tasks.every((task) => task.isCompleted && task.isChecked);
 
-  // Cập nhật trạng thái hiển thị của các nút
   if (checkedCount > 0) {
     document.getElementById("delTask").classList.remove("hidden");
     document
@@ -284,7 +281,6 @@ function updateButtonVisibility() {
       .getElementById("unMarkCompletedBtn")
       .classList.toggle("hidden", !allCompletedAndChecked);
   } else {
-    // Khi không có checkbox nào được chọn
     document.getElementById("delTask").classList.add("hidden");
     document.getElementById("markCompletedBtn").classList.add("hidden");
     document
@@ -486,7 +482,24 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-// Double click to EDIT SUBTASK
+// Handle Cancel button when Add Task click
+function cancelTask() {
+  const form = document.getElementById("task-form");
+  form.classList.add("hidden");
+
+  document.getElementById("mainTask").value = "";
+  document.getElementById("mainDescription").value = "";
+  document.getElementById("datepicker").value = "";
+  document.getElementById("selectedPriority").innerText = "Priority";
+}
+
+// Show option Edit or Delete
+function dropdown(taskId) {
+  const menu = document.getElementById(`dropdownDots-${taskId}`);
+  menu.classList.toggle("hidden");
+}
+
+// Double click to EDIT TASK
 function addEditForm() {
   const editForms = document.querySelectorAll(".edit-form");
 
@@ -500,6 +513,9 @@ function addEditForm() {
       const taskDateInput = form.querySelector('input[id^="task-date-"]');
       const dropdownButton = form.querySelector(
         '[data-dropdown-toggle^="dropdown-"]'
+      );
+      const dropdownMenu = document.getElementById(
+        `dropdown-${form.id.split("-").pop()}`
       );
 
       if (editButtons) {
@@ -538,10 +554,20 @@ function addEditForm() {
             const taskId = form.id.split("-").pop();
             const task = tasks.find((task) => task.id == taskId);
             if (task) {
-              task.priority = newPriority;
               form.querySelector(
                 '[data-dropdown-toggle^="dropdown-"] span'
               ).textContent = newPriority;
+
+              task.priority = newPriority;
+              const prioritySpan = form.querySelector(
+                '[data-dropdown-toggle^="dropdownSub-"] span'
+              );
+              if (prioritySpan) {
+                prioritySpan.textContent = newPriority;
+              }
+              if (dropdownMenu) {
+                dropdownMenu.classList.add("hidden");
+              }
             }
           });
         });
@@ -550,23 +576,7 @@ function addEditForm() {
   });
 }
 
-// Handle Cancel button when Add Task click
-function cancelTask() {
-  const form = document.getElementById("task-form");
-  form.classList.add("hidden");
-
-  document.getElementById("mainTask").value = "";
-  document.getElementById("mainDescription").value = "";
-  document.getElementById("datepicker").value = "";
-  document.getElementById("selectedPriority").innerText = "Priority";
-}
-
-// Show option Edit or Delete
-function dropdown(taskId) {
-  const menu = document.getElementById(`dropdownDots-${taskId}`);
-  menu.classList.toggle("hidden");
-}
-
+// Function Save new value when EDIT TASK
 function saveTask(taskId) {
   const form = document.getElementById(`edit-form-${taskId}`);
   const inputs = form.querySelectorAll('input[type="text"]');
@@ -593,15 +603,24 @@ function saveTask(taskId) {
 }
 // FUNCTION NOT YET COMPLETE
 function cancelEdit(taskId) {
-  const form = document.getElementById(`edit-form-${taskId}`);
-  const inputs = form.querySelectorAll('input[type="text"]');
-  const editButtons = form.querySelector(".edit-buttons");
+  const taskElement = document.getElementById(`edit-form-${taskId}`);
+  const inputs = taskElement.querySelectorAll('input[type="text"]');
+  const editButtons = taskElement.querySelector(".edit-buttons");
+
+  const originalTask = tasks.find((task) => task.id === taskId);
+
+  taskElement.querySelector(`#task-name-${taskId}`).value = originalTask.name;
+  taskElement.querySelector(`#task-description-${taskId}`).value =
+    originalTask.description;
+  taskElement.querySelector(`#task-date-${taskId}`).value = originalTask.date;
+  taskElement.querySelector(`#dropdownButton-${taskId} span`).textContent =
+    originalTask.priority;
 
   // Disable editing and hide buttons
-  inputs.forEach((input) => input.setAttribute("readonly", "readonly"));
   editButtons.classList.add("hidden");
-}
 
+  inputs.forEach((input) => input.setAttribute("readonly", "readonly"));
+}
 // Function Delete Task
 function deleteTask(taskId) {
   tasks = tasks.filter((task) => task.id !== taskId);
@@ -758,7 +777,7 @@ function renderSubtasks() {
       <hr class="mt-3 border-t border-gray-300">
 
       <div id="editSub-buttons-${subtask.id}" class="mt-3 flex justify-end gap-3 end-0 editSub-buttons hidden">
-          <button onclick="cancelEdit(${subtask.id})" class="px-4 py-2 font-bold text-white bg-gray-400 rounded-lg" type="button">Cancel</button>
+          <button onclick="cancelEditSubTask(${subtask.id})" class="px-4 py-2 font-bold text-white bg-gray-400 rounded-lg" type="button">Cancel</button>
           <button onclick="saveEdit(${subtask.id})" class="px-4 py-2 font-bold text-white bg-teal-300 rounded-lg" >Save</button>
         </div>
     </div>
@@ -812,7 +831,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Handle when clicked on Cancel Edit SUBTASK
-function cancelEdit(subtaskId) {
+function cancelEditSubTask(subtaskId) {
   // Find the subtask element and edit buttons
   const subtaskElement = document.getElementById(`subTask-${subtaskId}`);
   const editButtons = document.getElementById(`editSub-buttons-${subtaskId}`);
