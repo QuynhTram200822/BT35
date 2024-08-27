@@ -58,9 +58,9 @@ function renderTaskList() {
   taskList.innerHTML = "";
 
   tasks.forEach((task) => {
-    const completedClass = task.isChecked ? "checked" : "";
-    const radioBoxChecked = task.isChecked ? "checked" : "";
-    const checkBoxChecked = task.isCompleted ? "checked" : "";
+    const completedClass = task.isCompleted ? "checked" : "";
+    const radioBoxChecked = task.isCompleted ? "checked" : "";
+    const checkBoxChecked = task.isChecked ? "checked" : "";
 
     const taskHTML = `
       <div id="edit-form-${task.id}" class="mx-2 mt-3 edit-form">
@@ -141,23 +141,23 @@ function renderTaskList() {
 }
 
 // Function mark 1 task completed
-function isChecked() {
+function isCompleted() {
   tasks.forEach((task) => {
     const markSingle = document.getElementById(`mark-single-${task.id}`);
     markSingle.addEventListener("change", function () {
-      task.isChecked = this.checked;
+      task.isCompleted = this.checked;
       renderTaskList();
     });
   });
 }
 
 // Mark muliti tassk Completed
-function isCompleted() {
+function isChecked() {
   tasks.forEach((task) => {
     const checkedTask = document.getElementById(`checkbox-${task.id}`);
 
     checkedTask.addEventListener("change", function () {
-      task.isCompleted = this.checked;
+      task.isChecked = this.checked;
 
       updateButtonVisibility();
       renderTaskList();
@@ -167,86 +167,154 @@ function isCompleted() {
 
 // Hàm cập nhật trạng thái của các nút
 function updateButtonVisibility() {
-  // Kiểm tra xem có ít nhất một checkbox nào được chọn không
-  let checkboxes = Array.from(
-    tasks.map((task) => document.getElementById(`checkbox-${task.id}`))
+  // Lấy tất cả các checkbox
+  let checkboxes = tasks.map((task) =>
+    document.getElementById(`checkbox-${task.id}`)
   );
 
   // Kiểm tra số lượng checkbox được chọn
   let checkedCount = checkboxes.filter((checkbox) => checkbox.checked).length;
 
-  // Kiểm tra nếu tất cả các todo đều được chọn
-  let allChecked =
-    checkboxes.length > 0 && checkboxes.every((checkbox) => checkbox.checked);
+  // Kiểm tra nếu tất cả các nhiệm vụ đều chưa hoàn thành và đều được chọn
+  let allNotCompletedAndChecked =
+    tasks.length > 0 &&
+    tasks.every((task) => task.isCompleted && task.isChecked);
 
   // Cập nhật trạng thái hiển thị của các nút
   if (checkedCount > 0) {
     document.getElementById("delTask").classList.remove("hidden");
-    document
-      .getElementById("markCompletedBtn")
-      .classList.toggle("hidden", allChecked);
+    document.getElementById("markCompletedBtn").classList.toggle("hidden");
     document
       .getElementById("unMarkCompletedBtn")
-      .classList.toggle("hidden", !allChecked);
+      .classList.toggle("hidden", !allNotCompletedAndChecked);
   } else {
+    // Khi không có checkbox nào được chọn
     document.getElementById("delTask").classList.add("hidden");
     document.getElementById("markCompletedBtn").classList.add("hidden");
-    document.getElementById("unMarkCompletedBtn").classList.add("hidden");
+    document
+      .getElementById("unMarkCompletedBtn")
+      .classList.toggle("hidden", !allNotCompletedAndChecked);
   }
 }
 updateButtonVisibility();
 
+// Show modal when user Delete | Mark completed | Mark Uncompleted
+document.getElementById("delTask").onclick = function () {
+  showModal("delete");
+};
+
+document.getElementById("markCompletedBtn").onclick = function () {
+  showModal("markCompleted");
+};
+document.getElementById("unMarkCompletedBtn").onclick = function () {
+  showModal("markUncompleted");
+};
+
+function showModal(action) {
+  var modal = document.getElementById("popup-modal");
+  var yesBtn = document.getElementById("yesBtn");
+  var noBtn = document.getElementById("noBtn");
+
+  modal.style.display = "block";
+
+  yesBtn.onclick = function () {
+    performAction(action);
+    modal.style.display = "none";
+  };
+
+  noBtn.onclick = function () {
+    modal.style.display = "none";
+  };
+
+  window.onclick = function (event) {
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  };
+}
+
+function performAction(action) {
+  if (action === "delete") {
+    deleteTodos();
+  } else if (action === "markCompleted") {
+    markCompleted();
+  } else if (action === "markUncompleted") {
+    markUncompleted();
+  }
+}
+
 // function to delete selected tasks
 function deleteTodos() {
-  // Lấy tất cả các checkbox được chọn
-  let checkboxes = Array.from(
-    document.querySelectorAll('input[name="checkbox"]:checked')
-  );
+  let checkboxes = Array.from(document.querySelectorAll(".checkbox:checked"));
 
   if (checkboxes.length > 0) {
-    // Có ít nhất một checkbox được chọn
     // Lấy danh sách các id của todos được chọn
     let selectedIds = checkboxes.map((checkbox) =>
       parseInt(checkbox.id.replace("checkbox-", ""), 10)
     );
 
-    // Cập nhật danh sách tasks để loại bỏ các todo được chọn
     tasks = tasks.filter((task) => !selectedIds.includes(task.id));
+
+    renderTaskList();
   } else {
-    // Không có checkbox nào được chọn
-    // Xóa tất cả các todos
-    tasks = [];
+    alert("Don't have any tasks selected");
   }
-
-  // Cập nhật giao diện người dùng sau khi xóa todos
-  // updateTaskList();
-  renderTaskList();
-
-  // Cập nhật trạng thái hiển thị của các nút
   updateButtonVisibility();
 }
 
-//Function update UI after delete tasks
-function updateTaskList() {
-  const taskList = document.getElementById("task-list");
-  taskList.innerHTML = "";
+// Function to Mark all tasks as completed
+function markCompleted() {
+  // Lấy tất cả các checkbox được chọn
+  let checkboxes = Array.from(document.querySelectorAll(".checkbox:checked"));
 
-  // Tạo lại danh sách nhiệm vụ
-  tasks.forEach((task) => {
-    const taskElement = `
-      <input type="checkbox" id="checkbox-${task.id}" name="checkbox">
-      <label for="checkbox-${task.id}">${task.text}</label>
-    `;
-    taskListContainer.appendChild(taskElement);
-  });
+  if (checkboxes.length > 0) {
+    // Lấy danh sách các id của todos được chọn
+    let selectedIds = checkboxes.map((checkbox) =>
+      parseInt(checkbox.id.replace("checkbox-", ""), 10)
+    );
 
-  // Gán sự kiện lại cho các checkbox
-  isCompleted();
+    tasks = tasks.map((task) => {
+      if (selectedIds.includes(task.id)) {
+        return { ...task, isCompleted: true, isChecked: true };
+      } else {
+        return task;
+      }
+    });
+
+    renderTaskList();
+
+    updateButtonVisibility();
+  } else {
+    alert("Không có mục nào được chọn để đánh dấu hoàn thành.");
+  }
 }
 
-// Function to Mark all tasks as completed
-
 // Function to UnMark all tasks as uncompleted
+function markUncompleted() {
+  // Lấy tất cả các checkbox được chọn
+  let checkboxes = Array.from(document.querySelectorAll(".checkbox:checked"));
+
+  if (checkboxes.length > 0) {
+    // Lấy danh sách các id của todos được chọn
+    let selectedIds = checkboxes.map((checkbox) =>
+      parseInt(checkbox.id.replace("checkbox-", ""), 10)
+    );
+
+    tasks = tasks.map((task) => {
+      if (selectedIds.includes(task.id)) {
+        return { ...task, isCompleted: false, isChecked: false };
+      } else {
+        return task;
+      }
+    });
+
+    renderTaskList();
+
+    updateButtonVisibility();
+  } else {
+    alert("Không có mục nào được chọn để đánh dấu hoàn thành.");
+  }
+}
 
 //Function update name, description MAIN TASK in edit modal
 document.addEventListener("DOMContentLoaded", () => {
