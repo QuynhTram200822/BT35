@@ -246,7 +246,7 @@ function isCompleted() {
   });
 }
 
-// Mark muliti task Completed
+// Mark multiple task Completed
 function isChecked() {
   tasks.forEach((task) => {
     const checkedTask = document.getElementById(`checkbox-${task.id}`);
