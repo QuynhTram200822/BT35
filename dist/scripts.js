@@ -33,7 +33,17 @@ let currentEditTaskId = null;
 function addTask() {
   const taskName = document.getElementById("mainTask").value;
   const taskDescription = document.getElementById("mainDescription").value;
-  const taskDate = formatDate(document.getElementById("datepicker").value);
+  let taskDate = document.getElementById("datepicker").value;
+
+  // Kiểm tra nếu taskDate không có dữ liệu
+  if (!taskDate) {
+    // Nếu trống, lấy ngày hiện tại
+    taskDate = new Date().toISOString().split("T")[0];
+  }
+
+  // Định dạng ngày
+  taskDate = formatDate(taskDate);
+
   const taskPriority = document.querySelector("#selectedPriority").innerText;
 
   let newTask = {
@@ -51,6 +61,7 @@ function addTask() {
 
   renderTaskList();
   cancelTask();
+  taskAmount();
 }
 
 function renderTaskList() {
@@ -63,73 +74,74 @@ function renderTaskList() {
     const checkBoxChecked = task.isChecked ? "checked" : "";
 
     const taskHTML = `
-      <div id="edit-form-${task.id}" class="mx-2 mt-3 edit-form">
-        <div class="flex items-start justify-between p-4">
-          <div>
-            <div class="flex items-start gap-2 ${completedClass}">
-              <input ${checkBoxChecked} id="checkbox-${task.id}" type="checkbox" class="checkbox w-4 h-4 mt-2 bg-gray-100 border-gray-300 rounded focus:ring-0">
-              <input ${radioBoxChecked} id="mark-single-${task.id}"  type="checkbox" class=" w-4 h-4 mt-2 bg-gray-100 border-gray-300 rounded-full focus:ring-0">
-              <div id="test-${task.id}">
-                <div>
-                  <input id="task-name-${task.id}" type="text" value="${task.name}" class="border-none block w-full py-1.5 text-sm placeholder:text-gray-400" placeholder="Task name" readonly>
-                </div>
-                <div class="mt-1">
-                  <input id="task-description-${task.id}" type="text" value="${task.description}" class="border-none block w-full py-1.5 text-sm placeholder:text-gray-300" placeholder="Description" readonly>
-                </div>
-              </div>
-            </div>
-            <div class="flex gap-3 ms-3">
-              <!-- Date Picker -->
-              <div class="relative mt-3">
-                <div class="absolute inset-y-2 flex items-center pointer-events-none start-0 ps-3">
-                  <i class="text-gray-400 me-2 bi bi-calendar-event"></i>
-                </div>
-                <input id="task-date-${task.id}"  type="text" value="${task.date}" class=" datepicker px-2 py-1 text-base text-green-500 bg-transparent border border-gray-400 rounded ps-10 placeholder:text-green-500">
-                <div class="absolute inset-y-2 flex items-center pointer-events-none end-0 ps-3">
-                  <i class="text-gray-400 me-2 bi bi-x-lg"></i>
-                </div>
-              </div>
-              <!-- Priority -->
-              <div class="flex relative items-center ">
-              <button id="dropdownButton-${task.id}" data-dropdown-toggle="dropdown-${task.id}" 
-                class="items-center inline-flex  w-32 px-2 py-1 mt-3 text-sm text-center text-gray-400 bg-transparent border border-gray-400 rounded font-base"
-                type="button">
-                <i class="text-gray-400 me-2 bi bi-flag"></i>
-                <span id="task-priority-display-${task.id}">${task.priority}</span>
-              </button>
-              <!--Priority Dropdown menu -->
-              <div id="dropdown-${task.id}" class="z-10 right-full hidden bg-white divide-gray-100 rounded shadow absolute top-11 w-44 left-0">
-                <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownButton-${task.id}">
-                  <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P1"><i class="text-red-500 me-2 bi bi-flag-fill"></i>Priority 1</a></li>
-                  <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P2"><i class="text-orange-500 me-2 bi bi-flag-fill"></i>Priority 2</a></li>
-                  <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P3"><i class="text-blue-500 me-2 bi bi-flag-fill"></i>Priority 3</a></li>
-                  <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P4"><i class="text-green-500 me-2 bi bi-flag-fill"></i>Priority 4</a></li>
-                </ul>
-              </div>
-              </div>
-            </div>
+    <div id="edit-form-${task.id}" class="mx-2 mt-3 edit-form">
+    <div class="flex items-start justify-between p-4">
+      <div class="flex flex-grow items-start gap-2 ${completedClass}">
+        <input ${checkBoxChecked} id="checkbox-${task.id}" type="checkbox" class="checkbox w-4 h-4 mt-2 bg-gray-100 border-gray-300 rounded focus:ring-0">
+        <input ${radioBoxChecked} id="mark-single-${task.id}" type="checkbox" class="w-4 h-4 mt-2 bg-gray-100 border-gray-300 rounded-full focus:ring-0">
+        <div id="test-${task.id}" class="flex flex-col flex-grow">
+          <div class="flex items-center">
+            <input id="task-name-${task.id}" type="text" value="${task.name}" class="border-none block flex-grow py-1.5 text-sm placeholder:text-gray-400" placeholder="Task name" readonly>
           </div>
-          <div class="flex relative items-center ml-auto ">
-            <button onclick="dropdown(${task.id})
-            "data-dropdown-toggle="dropdownDots-${task.id}" 
-              class="z-10 inline-flex items-center p-2 text-sm font-medium text-center text-gray-400 bg-white rounded focus:ring-0 focus:outline-none" type="button">
-              <i class="bi bi-three-dots-vertical"></i>
-            </button>
-            <!-- Dropdown menu -->
-            <div id="dropdownDots-${task.id}" class="hidden w-32 bg-white divide-y divide-gray-100 rounded shadow absolute end-0 top-7">
-              <ul class="m-2 text-sm text-gray-400">
-                <li><a onClick="showEditModal(${task.id})" href="#" class="block px-1 py-1 hover:bg-gray-100">Edit</a></li>
-                <li><a onClick="showConfirmModal(${task.id})" href="#" class="block px-1 py-1 hover:bg-gray-100">Delete</a></li>
-              </ul>
-            </div>
+          <div class="mt-1">
+            <textarea id="task-description-${task.id}" class="resize-none border-none block w-full py-1.5 text-sm placeholder:text-gray-300" rows="3" readonly>${task.description}</textarea>
           </div>
-        </div>
-        <hr class="mt-3 border-t border-gray-300">
-        <div id="edit-buttons-${task.id}" class="mt-3 flex justify-end gap-3 end-0 edit-buttons hidden">
-          <button onClick="cancelEdit(${task.id})" class="px-4 py-2 font-bold text-white bg-gray-400 rounded-lg">Cancel</button>
-          <button onClick="saveTask(${task.id})" class="px-4 py-2 font-bold text-white bg-teal-300 rounded-lg">Save</button>
         </div>
       </div>
+     
+        <!-- Dropdown menu for actions -->
+        <div class="relative">
+          <button onclick="dropdown(${task.id})" data-dropdown-toggle="dropdownDots-${task.id}" 
+            class="inline-flex items-center p-2 text-sm text-gray-400 bg-white rounded focus:ring-0 focus:outline-none" type="button">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          <div id="dropdownDots-${task.id}" class="hidden w-32 bg-white divide-y divide-gray-100 rounded shadow absolute end-0 top-7">
+            <ul class="m-2 text-sm text-gray-400">
+              <li><a onClick="showEditModal(${task.id})" href="#" class="block px-1 py-1 hover:bg-gray-100">Edit</a></li>
+              <li><a onClick="showConfirmModal(${task.id})" href="#" class="block px-1 py-1 hover:bg-gray-100">Delete</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 ms-6">
+      <!-- Date Picker -->
+      <div class="relative">
+        <div class="absolute inset-y-2 flex items-center pointer-events-none start-0 ps-3">
+          <i class="text-gray-400 me-2 bi bi-calendar-event"></i>
+        </div>
+        <input id="task-date-${task.id}" type="text" value="${task.date}" class="datepicker px-2 py-1 text-base text-green-500 bg-transparent border border-gray-400 rounded ps-10 placeholder:text-green-500">
+        <div class="absolute inset-y-2 flex items-center pointer-events-none end-0 ps-3">
+          <i class="text-gray-400 me-2 bi bi-x-lg"></i>
+        </div>
+      </div>
+      <!-- Priority -->
+      <div class="relative flex items-center">
+        <button id="dropdownButton-${task.id}" data-dropdown-toggle="dropdown-${task.id}" 
+          class="inline-flex items-center px-2 py-1 text-sm text-gray-400 bg-transparent border border-gray-400 rounded font-base"
+          type="button">
+          <i class="text-gray-400 me-2 bi bi-flag"></i>
+          <span id="task-priority-display-${task.id}">${task.priority}</span>
+        </button>
+        <!-- Priority Dropdown menu -->
+        <div id="dropdown-${task.id}" class="z-10 right-full hidden bg-white divide-gray-100 rounded shadow absolute top-11 w-44 left-0">
+          <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownButton-${task.id}">
+            <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P1"><i class="text-red-500 me-2 bi bi-flag-fill"></i>Priority 1</a></li>
+            <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P2"><i class="text-orange-500 me-2 bi bi-flag-fill"></i>Priority 2</a></li>
+            <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P3"><i class="text-blue-500 me-2 bi bi-flag-fill"></i>Priority 3</a></li>
+            <li><a href="#" class="block px-4 py-1 dropdown-item" data-priority="P4"><i class="text-green-500 me-2 bi bi-flag-fill"></i>Priority 4</a></li>
+          </ul>
+        </div>
+      </div>
+      
+    </div>
+
+    <hr class="mt-3 border-t border-gray-300">
+    <div id="edit-buttons-${task.id}" class="mt-3 flex justify-end gap-3 end-0 edit-buttons hidden">
+      <button onClick="cancelEdit(${task.id})" class="px-4 py-2 font-bold text-white bg-gray-400 rounded-lg">Cancel</button>
+      <button onClick="saveTask(${task.id})" class="px-4 py-2 font-bold text-white bg-teal-300 rounded-lg">Save</button>
+    </div>
+  </div>
+  
     `;
     taskList.innerHTML += taskHTML;
   });
@@ -138,6 +150,18 @@ function renderTaskList() {
   isCompleted();
   cancelTask();
   addEditForm();
+}
+
+function taskAmount() {
+  var totalTasks = tasks.length;
+
+  if (totalTasks > 0) {
+    document.getElementById("checkIcon").classList.toggle("hidden");
+    document.getElementById("taskCompleted").classList.remove("hidden");
+  }
+
+  document.getElementById("tasksTotal").innerHTML =
+    " " + totalTasks + " Tasks Completed!";
 }
 
 // Function to render Task List when search
@@ -241,6 +265,9 @@ function isCompleted() {
     const markSingle = document.getElementById(`mark-single-${task.id}`);
     markSingle.addEventListener("change", function () {
       task.isCompleted = this.checked;
+
+      completedCount();
+
       renderTaskList();
     });
   });
@@ -376,9 +403,15 @@ function markCompleted() {
     renderTaskList();
 
     updateButtonVisibility();
-  } else {
-    alert("Không có mục nào được chọn để đánh dấu hoàn thành.");
+
+    completedCount();
   }
+}
+
+function completedCount() {
+  const checkedCheckboxes = tasks.filter((task) => task.isCompleted).length;
+  document.getElementById("taskCompleted").innerHTML =
+    checkedCheckboxes + " / " + " ";
 }
 
 // Function to UnMark all tasks as uncompleted
@@ -403,8 +436,8 @@ function markUncompleted() {
     renderTaskList();
 
     updateButtonVisibility();
-  } else {
-    alert("Không có mục nào được chọn để đánh dấu hoàn thành.");
+
+    completedCount();
   }
 }
 
@@ -414,7 +447,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const descriptionInput = document.getElementById("modal-task-description");
 
   if (nameInput && descriptionInput) {
-    nameInput.addEventListener("change", (e) => {
+    nameInput.addEventListener("input", (e) => {
       const newNameValue = e.target.value;
 
       tasks = tasks.map((task) => ({
@@ -424,7 +457,7 @@ document.addEventListener("DOMContentLoaded", () => {
       renderTaskList();
     });
 
-    descriptionInput.addEventListener("change", (e) => {
+    descriptionInput.addEventListener("input", (e) => {
       const newDescriptionValue = e.target.value;
 
       tasks = tasks.map((task) => ({
@@ -464,6 +497,11 @@ document.querySelectorAll("#dropdownEditForm a").forEach((item) => {
           : task.priority,
     }));
     renderTaskList();
+
+    const dropdownEdit = document.getElementById("dropdownEditForm");
+    if (dropdownEdit) {
+      dropdownEdit.classList.add("hidden");
+    }
   });
 });
 
@@ -477,6 +515,22 @@ document.addEventListener("DOMContentLoaded", function () {
       tasks = tasks.map((task) => ({
         ...task,
         date: task.id === currentEditTaskId ? selectedDate : task.date,
+      }));
+      renderTaskList();
+    });
+});
+
+// Function edit checkbox in modal edit
+document.addEventListener("DOMContentLoaded", function () {
+  document
+    .getElementById("modal-checkbox")
+    .addEventListener("change", function (event) {
+      const isCompleted = event.target.checked;
+
+      tasks = tasks.map((task) => ({
+        ...task,
+        isCompleted:
+          task.id === currentEditTaskId ? isCompleted : task.isCompleted,
       }));
       renderTaskList();
     });
@@ -508,7 +562,7 @@ function addEditForm() {
       const editButtons = form.querySelector(".edit-buttons");
       const taskNameInput = form.querySelector('input[id^="task-name-"]');
       const taskDescriptionInput = form.querySelector(
-        'input[id^="task-description-"]'
+        'textarea[id^="task-description-"]'
       );
       const taskDateInput = form.querySelector('input[id^="task-date-"]');
       const dropdownButton = form.querySelector(
@@ -593,14 +647,15 @@ function addEditForm() {
 function saveTask(taskId) {
   const form = document.getElementById(`edit-form-${taskId}`);
   const inputs = form.querySelectorAll('input[type="text"]');
+  const textarea = form.querySelector("textarea");
   const editButtons = form.querySelector(".edit-buttons");
 
   // Save the updated values
   const updatedTask = {
     id: taskId,
     name: inputs[0].value,
-    description: inputs[1].value,
-    date: inputs[2].value,
+    description: textarea.value,
+    date: inputs[1].value,
     priority: form.querySelector("button span").textContent,
   };
 
@@ -644,8 +699,10 @@ function deleteTask(taskId) {
 function showConfirmModal(taskId) {
   const confirmModal = document.getElementById("confirmModal");
   let EditForm = document.getElementById("crud-modal");
-
   confirmModal.classList.remove("hidden");
+
+  const menu = document.getElementById(`dropdownDots-${taskId}`);
+  menu.classList.add("hidden");
 
   // Handle Cancel button click
   let cancelButton = document.getElementById("cancelButton");
@@ -668,6 +725,9 @@ function showEditModal(taskId) {
   let EditForm = document.getElementById("crud-modal");
   EditForm.classList.remove("hidden");
 
+  const menu = document.getElementById(`dropdownDots-${taskId}`);
+  menu.classList.add("hidden");
+
   // Handle Close button click in Edit Form
   let closeEditForm = document.getElementById("closeEditForm");
   closeEditForm.onclick = function () {
@@ -687,6 +747,7 @@ function showEditModal(taskId) {
 
   document.getElementById("modal-task-name").value = task.name;
   document.getElementById("modal-task-description").value = task.description;
+  document.getElementById("modal-checkbox").checked = task.isCompleted;
   document.getElementById("modal-task-due-date").value = task.date;
 
   // Set priority
@@ -701,14 +762,21 @@ document.getElementById("text").innerText = document.title;
 // Add Subtask
 let subTasks = [];
 let id = 1;
+
 function addSubtask(event) {
   event.preventDefault();
   const subtaskName = document.getElementById("subTask").value;
   const subtaskDescription = document.getElementById("subDescription").value;
-  const subtaskDate = formatDate(
-    document.getElementById("datepicker-sub").value
-  );
   const subtaskPriority = document.getElementById("subPriority").innerText;
+
+  let subtaskDate = document.getElementById("datepicker-sub").value;
+  if (!subtaskDate) {
+    // Nếu trống, lấy ngày hiện tại
+    subtaskDate = new Date().toISOString().split("T")[0]; // 'yyyy-mm-dd' format
+  }
+
+  // Định dạng ngày
+  subtaskDate = formatDate(subtaskDate);
 
   let newSubtask = {
     id: id++,
