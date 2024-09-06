@@ -84,7 +84,7 @@ function renderTaskList() {
             <input id="task-name-${task.id}" type="text" value="${task.name}" class="border-none block flex-grow py-1.5 text-sm placeholder:text-gray-400" placeholder="Task name" readonly>
           </div>
           <div class="mt-1">
-            <textarea id="task-description-${task.id}" class="resize-none border-none block w-full py-1.5 text-sm placeholder:text-gray-300" rows="3" readonly>${task.description}</textarea>
+            <textarea id="task-description-${task.id}" class="resize-none border-none block w-full py-1.5 text-sm placeholder:text-gray-300" rows="2" placeholder=" Description" readonly>${task.description}</textarea>
           </div>
         </div>
       </div>
@@ -771,11 +771,9 @@ function addSubtask(event) {
 
   let subtaskDate = document.getElementById("datepicker-sub").value;
   if (!subtaskDate) {
-    // Nếu trống, lấy ngày hiện tại
     subtaskDate = new Date().toISOString().split("T")[0]; // 'yyyy-mm-dd' format
   }
 
-  // Định dạng ngày
   subtaskDate = formatDate(subtaskDate);
 
   let newSubtask = {
@@ -814,7 +812,9 @@ function renderSubtasks() {
         <input id="subtask-name-${subtask.id}" type="text" value="${subtask.name}" class="border-none block w-full py-1.5 text-sm placeholder:text-gray-400" placeholder="Subtask name" readonly>
         </div>
       <div class="mt-1">
-      <input id="subtask-description-${subtask.id}" type="text" value="${subtask.description}" class="border-none block w-full py-1.5 text-sm placeholder:text-gray-300" placeholder="Subtask Description" readonly>
+    
+
+      <textarea id="subtask-description-${subtask.id}" class="resize-none border-none block w-full py-1.5 text-sm placeholder:text-gray-300" placeholder="Subtask Description" rows="2" readonly>${subtask.description}</textarea>
     </div>
     </div>
     </div>
@@ -991,7 +991,7 @@ function addEditSubtask() {
       const editSubButtons = document.querySelector(".editSub-buttons");
       const subtaskNameInput = form.querySelector('input[id^="subtask-name-"]');
       const subtaskDescriptionInput = form.querySelector(
-        'input[id^="subtask-description-"]'
+        '[id^="subtask-description-"]'
       );
       const taskDateInput = form.querySelector('input[id^="subtask-date-"]');
       const dropdownButton = form.querySelector(
