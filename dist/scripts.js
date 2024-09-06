@@ -374,6 +374,9 @@ function deleteTodos() {
 
     tasks = tasks.filter((task) => !selectedIds.includes(task.id));
 
+    taskAmount();
+    completedCount();
+
     renderTaskList();
   } else {
     alert("Don't have any tasks selected");
@@ -692,6 +695,9 @@ function cancelEdit(taskId) {
 // Function Delete Task
 function deleteTask(taskId) {
   tasks = tasks.filter((task) => task.id !== taskId);
+  taskAmount();
+  completedCount();
+
   renderTaskList();
 }
 
