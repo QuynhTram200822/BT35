@@ -1142,20 +1142,12 @@ input[type="range"]::-ms-fill-lower {
   z-index: 10;
 }
 
-.z-40 {
-  z-index: 40;
-}
-
-.-z-10 {
-  z-index: -10;
-}
-
-.z-20 {
-  z-index: 20;
-}
-
 .z-30 {
   z-index: 30;
+}
+
+.z-40 {
+  z-index: 40;
 }
 
 .col-span-2 {
@@ -1201,6 +1193,14 @@ input[type="range"]::-ms-fill-lower {
 
 .mb-2 {
   margin-bottom: 0.5rem;
+}
+
+.mb-20 {
+  margin-bottom: 5rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
 }
 
 .mb-4 {
@@ -1255,12 +1255,12 @@ input[type="range"]::-ms-fill-lower {
   margin-top: 1.5rem;
 }
 
-.mb-20 {
-  margin-bottom: 5rem;
+.mb-6 {
+  margin-bottom: 1.5rem;
 }
 
-.mb-3 {
-  margin-bottom: 0.75rem;
+.mb-11 {
+  margin-bottom: 2.75rem;
 }
 
 .block {
@@ -1387,10 +1387,6 @@ input[type="range"]::-ms-fill-lower {
   width: 100%;
 }
 
-.flex-1 {
-  flex: 1 1 0%;
-}
-
 .flex-grow {
   flex-grow: 1;
 }
@@ -1401,10 +1397,6 @@ input[type="range"]::-ms-fill-lower {
 
 .resize-none {
   resize: none;
-}
-
-.resize-y {
-  resize: vertical;
 }
 
 .grid-cols-3 {
@@ -1437,10 +1429,6 @@ input[type="range"]::-ms-fill-lower {
 
 .items-center {
   align-items: center;
-}
-
-.justify-start {
-  justify-content: flex-start;
 }
 
 .justify-end {
@@ -1488,10 +1476,6 @@ input[type="range"]::-ms-fill-lower {
 
 .overflow-y-auto {
   overflow-y: auto;
-}
-
-.overflow-x-hidden {
-  overflow-x: hidden;
 }
 
 .rounded {
@@ -1623,10 +1607,6 @@ input[type="range"]::-ms-fill-lower {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
-.bg-opacity-50 {
-  --tw-bg-opacity: 0.5;
-}
-
 .bg-gradient-to-r {
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }
@@ -1708,10 +1688,6 @@ input[type="range"]::-ms-fill-lower {
 
 .pb-1 {
   padding-bottom: 0.25rem;
-}
-
-.pb-20 {
-  padding-bottom: 5rem;
 }
 
 .pb-3 {
@@ -1913,22 +1889,8 @@ input[type="range"]::-ms-fill-lower {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
-.placeholder-gray-400::-moz-placeholder {
-  --tw-placeholder-opacity: 1;
-  color: rgb(156 163 175 / var(--tw-placeholder-opacity));
-}
-
-.placeholder-gray-400::placeholder {
-  --tw-placeholder-opacity: 1;
-  color: rgb(156 163 175 / var(--tw-placeholder-opacity));
-}
-
 .opacity-50 {
   opacity: 0.5;
-}
-
-.opacity-25 {
-  opacity: 0.25;
 }
 
 .shadow {
@@ -1968,11 +1930,6 @@ input[type="range"]::-ms-fill-lower {
 .ring-gray-300 {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(209 213 219 / var(--tw-ring-opacity));
-}
-
-.blur {
-  --tw-blur: blur(8px);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 .drop-shadow-3xl {

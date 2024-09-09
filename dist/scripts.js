@@ -4,6 +4,7 @@ const taskForm = document.querySelector("#task-form");
 
 const addButton = function () {
   taskForm.classList.remove("hidden");
+  btnAdd.classList.add("hidden");
 };
 
 //Function Select priority
@@ -62,6 +63,8 @@ function addTask() {
   renderTaskList();
   cancelTask();
   taskAmount();
+
+  btnAdd.classList.remove("hidden");
 }
 
 function renderTaskList() {
@@ -378,8 +381,6 @@ function deleteTodos() {
     completedCount();
 
     renderTaskList();
-  } else {
-    alert("Don't have any tasks selected");
   }
   updateButtonVisibility();
 }
@@ -818,8 +819,6 @@ function renderSubtasks() {
         <input id="subtask-name-${subtask.id}" type="text" value="${subtask.name}" class="border-none block w-full py-1.5 text-sm placeholder:text-gray-400" placeholder="Subtask name" readonly>
         </div>
       <div class="mt-1">
-    
-
       <textarea id="subtask-description-${subtask.id}" class="resize-none border-none block w-full py-1.5 text-sm placeholder:text-gray-300" placeholder="Subtask Description" rows="2" readonly>${subtask.description}</textarea>
     </div>
     </div>
